@@ -59,6 +59,7 @@ namespace _halftheory {
 		}
 	}
 
+    [RequireComponent(typeof(Animator))]
 	public class OSC_Animation : MonoBehaviour {
 
 		public bool initialized = false;
@@ -68,14 +69,13 @@ namespace _halftheory {
         private string dataFilePathSuffix = "_Data.json";
         public string dataFilePath;
 
-        // child
+        // children
         private GameObject currentMeshObject;
         private OSC_Mesh currentMeshComponent;
 
 		void Awake() {
 			QualitySettings.vSyncCount = 0;
 		}
-
 		void Start() {
 			bool test = isCurrent();
 			if (test) {
@@ -86,7 +86,6 @@ namespace _halftheory {
 				}
 			}
 		}
-
 		void OnEnable() {
 			bool test = isCurrent();
 			if (test) {
@@ -97,7 +96,6 @@ namespace _halftheory {
 				}
 			}
 		}
-
 		void LateUpdate() {
 			bool test = isCurrent();
 			if (test) {
@@ -113,7 +111,24 @@ namespace _halftheory {
 				}
 			}
 		}
+        void OnDisable() {
+            if (initialized) {
+                saveData();
+            }
+        }
 
+		private bool isCurrent() {
+			bool res = true;
+			bool test = isInit();
+			if (!test) {
+				res = false;
+			}
+			if (MainSettingsVars.currentAnimationComponent != this) {
+				res = false;
+			}
+			current = res;
+			return res;
+		}
 		private bool isInit() {
 			if (initialized) {
 				return (true);
@@ -132,25 +147,10 @@ namespace _halftheory {
 			return (true);
 		}
 
-		private bool isCurrent() {
-			bool res = true;
-			bool test = isInit();
-			if (!test) {
-				res = false;
-			}
-			if (MainSettingsVars.currentAnimationComponent != this) {
-				res = false;
-			}
-			current = res;
-			return res;
-		}
-
-        private bool hasData() {
-            if (data != null) {
-                return (true);
-            }
+        private bool loadData() {
             data = ScriptableObject.CreateInstance<OSC_Animation_Data>();
-            dataFilePath = MainSettingsVars.dataPath+"/"+this.gameObject.name+dataFilePathSuffix; 
+            dataFilePath = MainSettingsVars.dataPath+"/"+this.gameObject.name+dataFilePathSuffix;
+            // try saved file
             if (File.Exists(dataFilePath)) {
                 BinaryFormatter bf = new BinaryFormatter();
                 FileStream file = File.Open(dataFilePath, FileMode.Open);
@@ -160,6 +160,7 @@ namespace _halftheory {
                 loadMeshData();
                 return (true);
             }
+            // new
             else {
                 saveData();
             }
@@ -168,23 +169,28 @@ namespace _halftheory {
             }
             return (false);
         }
-
         void saveData() {
             if (data == null) {
                 return;
             }
             saveMeshData();
-            BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Create(dataFilePath);
-            var json = JsonUtility.ToJson(data);
-            bf.Serialize(file, json);
-            file.Close();
-        }
-
-        void OnDisable() {
-            if (initialized) {
-                saveData();
+            if (dataFilePath != null) {
+            	BinaryFormatter bf = new BinaryFormatter();
+            	FileStream file = File.Create(dataFilePath);
+            	var json = JsonUtility.ToJson(data);
+            	bf.Serialize(file, json);
+            	file.Close();
             }
+        }
+        private bool hasData() {
+            if (data != null) {
+                return (true);
+            }
+            bool test = loadData();
+            if (test) {
+                return (true);
+            }
+            return (false);
         }
 
         void loadMeshData() {
@@ -229,7 +235,6 @@ namespace _halftheory {
 				Application.targetFrameRate = data.fps;
 			}
 		}
-
 		void SettingsCamera() {
 			// this object is 0
 			transform.position = Vector3.zero;

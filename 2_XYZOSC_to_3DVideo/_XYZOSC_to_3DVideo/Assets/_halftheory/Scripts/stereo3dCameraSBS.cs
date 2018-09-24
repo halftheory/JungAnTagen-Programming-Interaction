@@ -8,7 +8,7 @@ namespace _halftheory {
     [RequireComponent(typeof(Camera))]
     public class stereo3dCameraSBS : MonoBehaviour {
 
-		private static bool initialized = false;
+		private bool initialized = false;
 
 		// Cameras
 		public Camera mainCamComponent;
@@ -18,64 +18,15 @@ namespace _halftheory {
 		public GameObject rightCamRecord;
 
 		// Stereo Parameters
-		[SerializeField]
-		public float interaxial = 65f; // Distance (in millimeters) between cameras
-		public float zeroPrlxDist = 2f; // Distance (in meters) at which left and right images overlap exactly
-		public float H_I_T = 0; // Horizontal Image Transform - shift left and right image horizontally
+		[SerializeField] public float interaxial = 65f; // Distance (in millimeters) between cameras
+		[SerializeField] public float zeroPrlxDist = 2f; // Distance (in meters) at which left and right images overlap exactly
+		[SerializeField] public float H_I_T = 0; // Horizontal Image Transform - shift left and right image horizontally
 		private float offAxisFrustum = 0; // Esoteric parameter
 
 		// Side by Side Parameters
 		private enum cams_3D {LeftRight, LeftOnly, RightOnly, RightLeft}
 		private cams_3D cameraSelect = cams_3D.LeftRight; // View order - swap cameras for cross-eyed free-viewing
 		private bool sideBySideSqueezed = true; // 50% horizontal scale for 3DTVs
-
-		void OnEnable() {
-			bool test = isInit();
-			if (test) {
-				SetCameraSettings();
-			}
-		}
-		void Start() {
-			bool test = isInit();
-			if (test) {
-				SetCameraSettings();
-				// set tags
-				// must define tags first in Project Settings
-				leftCamRecord.tag = "leftCamRecord";
-				rightCamRecord.tag = "rightCamRecord";
-			}
-		}
-		void OnDisable() {
-			bool test = isInit();
-			if (test) {
-				mainCamComponent.enabled = true;
-				leftCam.SetActive(false);
-				rightCam.SetActive(false);
-				leftCamRecord.SetActive(false);
-				rightCamRecord.SetActive(false);
-			}
-		}
-		void OnDestroy() {
-			bool test = isInit();
-			if (test) {
-				mainCamComponent.enabled = true;
-				DestroyImmediate(leftCam);
-				DestroyImmediate(rightCam);
-				DestroyImmediate(leftCamRecord);
-				DestroyImmediate(rightCamRecord);
-			}
-		}
-		void Update() {
-			#if UNITY_EDITOR
-				if (EditorApplication.isPlaying) {
-					mainCamComponent.enabled = false;
-				}
-				else {
-					mainCamComponent.enabled = true; // need camera enabled when in edit mode
-				}
-			#endif
-			UpdateView();
-		}
 
 		private bool isInit() {
 			if (initialized) {
@@ -127,6 +78,54 @@ namespace _halftheory {
 
 			initialized = true;
 			return (true);
+		}
+
+		void OnEnable() {
+			bool test = isInit();
+			if (test) {
+				SetCameraSettings();
+			}
+		}
+		void Start() {
+			bool test = isInit();
+			if (test) {
+				SetCameraSettings();
+				// set tags
+				// must define tags first in Project Settings
+				leftCamRecord.tag = "leftCamRecord";
+				rightCamRecord.tag = "rightCamRecord";
+				#if UNITY_EDITOR
+					if (EditorApplication.isPlaying) {
+						mainCamComponent.enabled = false;
+					}
+					else {
+						mainCamComponent.enabled = true; // need camera enabled when in edit mode
+					}
+				#endif
+			}
+		}
+		void OnDisable() {
+			bool test = isInit();
+			if (test) {
+				mainCamComponent.enabled = true;
+				leftCam.SetActive(false);
+				rightCam.SetActive(false);
+				leftCamRecord.SetActive(false);
+				rightCamRecord.SetActive(false);
+			}
+		}
+		void OnDestroy() {
+			bool test = isInit();
+			if (test) {
+				mainCamComponent.enabled = true;
+				DestroyImmediate(leftCam);
+				DestroyImmediate(rightCam);
+				DestroyImmediate(leftCamRecord);
+				DestroyImmediate(rightCamRecord);
+			}
+		}
+		void Update() {
+			UpdateView();
 		}
 
 		void SetCameraSettings() {
@@ -196,8 +195,8 @@ namespace _halftheory {
 			// rotation
 			leftCam.transform.rotation = transform.rotation; 
 			rightCam.transform.rotation = transform.rotation;
-			leftCamRecord.transform.rotation = leftCam.transform.rotation;
-			rightCamRecord.transform.rotation = rightCam.transform.rotation;
+			leftCamRecord.transform.rotation = transform.rotation;
+			rightCamRecord.transform.rotation = transform.rotation;
 			// projectionMatrix
 			switch (cameraSelect) {
 				case cams_3D.LeftRight:{
@@ -245,9 +244,9 @@ namespace _halftheory {
 				right =	(tempAspect * a) - (interaxial/2000.0f * b) - (H_I_T/100f) + (offAxisFrustum/100f);
 			}
 			return PerspectiveOffCenter(left, right, -a, a, mainCamComponent.nearClipPlane, mainCamComponent.farClipPlane);
-		} 
+		}
 
-		private Matrix4x4 PerspectiveOffCenter(float left, float right, float top, float bottom, float near, float far) {
+		private Matrix4x4 PerspectiveOffCenter(float left, float right, float bottom, float top, float near, float far) {
 			float x = (2.0f * near) / (right - left);
 			float y = (2.0f * near) / (top - bottom);
 			float a = (right + left) / (right - left);
@@ -274,6 +273,36 @@ namespace _halftheory {
 			Gizmos.DrawSphere(gizmoLeft, 0.02f);
 			Gizmos.DrawSphere(gizmoRight, 0.02f);
 			Gizmos.DrawSphere(gizmoTarget, 0.02f);
+		}
+	}
+
+    [CustomEditor(typeof(stereo3dCameraSBS))]
+    [CanEditMultipleObjects]
+    public class stereo3dCameraSBSEditor : Editor {
+
+        SerializedProperty interaxial;
+        SerializedProperty zeroPrlxDist;
+        SerializedProperty H_I_T;
+
+        void OnEnable() {
+			interaxial = serializedObject.FindProperty("interaxial");
+			zeroPrlxDist = serializedObject.FindProperty("zeroPrlxDist");
+			H_I_T = serializedObject.FindProperty("H_I_T");
+		}
+
+		public override void OnInspectorGUI() {
+			// Show the editor controls.
+			serializedObject.Update();
+
+			interaxial.floatValue = EditorGUILayout.Slider(new GUIContent("Interaxial (mm)","Distance (in millimeters) between cameras."), interaxial.floatValue, 0, 1000f);
+			zeroPrlxDist.floatValue = EditorGUILayout.Slider(new GUIContent("Zero Prlx Dist (M)","Distance (in meters) at which left and right images converge."), zeroPrlxDist.floatValue, 0.1f, 100f);
+			H_I_T.floatValue = EditorGUILayout.Slider(new GUIContent("H I T","Horizontal Image Transform (default 0)"), H_I_T.floatValue, -25f, 25f);
+			//DrawDefaultInspector();
+
+			serializedObject.ApplyModifiedProperties();
+			if (GUI.changed) {
+				EditorUtility.SetDirty(target);
+			}
 		}
 	}
 }
