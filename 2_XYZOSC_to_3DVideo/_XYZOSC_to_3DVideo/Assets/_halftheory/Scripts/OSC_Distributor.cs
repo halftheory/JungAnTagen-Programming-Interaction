@@ -20,7 +20,6 @@ namespace _halftheory {
 		void Start() {
 			bool test = isInit();
 			if (test) {
-				//DontDestroyOnLoad(this.gameObject);
 				MainSettingsVars.oscComponent.SetAllMessageHandler(messageHandler);
 			}
 		}

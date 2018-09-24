@@ -5,22 +5,22 @@
 		<pattr name = "analysis_frequency_high" value = "8000" />
 		<pattr name = "analysis_frequency_low" value = "20" />
 		<pattr name = "analysis_frequency_mid" value = "500" />
-		<pattr name = "analysis_group0_active" value = "0" />
+		<pattr name = "analysis_group0_active" value = "1" />
 		<pattr name = "analysis_group0_level" value = "1." />
-		<pattr name = "analysis_group0_peaks" value = "2" />
+		<pattr name = "analysis_group0_peaks" value = "1" />
 		<pattr name = "analysis_group1_active" value = "0" />
 		<pattr name = "analysis_group1_level" value = "1." />
-		<pattr name = "analysis_group1_peaks" value = "10" />
+		<pattr name = "analysis_group1_peaks" value = "4" />
 		<pattr name = "analysis_group2_active" value = "0" />
-		<pattr name = "analysis_group2_level" value = "0.691265" />
-		<pattr name = "analysis_group2_limits" value = "1" />
-		<pattr name = "analysis_group2_peaks" value = "4" />
-		<pattr name = "analysis_group2_random" value = "1" />
+		<pattr name = "analysis_group2_level" value = "0." />
+		<pattr name = "analysis_group2_limits" value = "0" />
+		<pattr name = "analysis_group2_peaks" value = "0" />
+		<pattr name = "analysis_group2_random" value = "0" />
 		<pattr name = "analysis_group3_active" value = "0" />
-		<pattr name = "analysis_group3_level" value = "0.759844" />
+		<pattr name = "analysis_group3_level" value = "0." />
 		<pattr name = "analysis_group3_limits" value = "0" />
-		<pattr name = "analysis_group3_peaks" value = "57" />
-		<pattr name = "analysis_group3_random" value = "1" />
+		<pattr name = "analysis_group3_peaks" value = "0" />
+		<pattr name = "analysis_group3_random" value = "0" />
 		<pattr name = "analysis_volume_high" value = "0.9" />
 		<pattr name = "analysis_volume_low" value = "0.1" />
 		<pattr name = "analysis_volume_mid" value = "0.5" />
@@ -31,9 +31,9 @@
 		<pattr name = "analysis_z_high" value = "2" />
 		<pattr name = "analysis_z_low" value = "0" />
 		<pattr name = "audio_file_loop" value = "1" />
-		<pattr name = "audio_file_path" value = "&quot;work:/projects_working/stefanjuster-sine-machine/audio/Sounds/Additive Synthesis, Razor/04 Notch Filter/04 Notch Filter 2.wav&quot;" />
+		<pattr name = "audio_file_path" value = "" />
 		<pattr name = "audio_input_device" value = "0" />
-		<pattr name = "audio_output" value = "0" />
+		<pattr name = "audio_output" value = "1" />
 		<pattr name = "audio_output_device" value = "0" />
 		<pattr name = "audio_sr" value = "1" />
 		<pattr name = "osc_framerate" value = "60" />

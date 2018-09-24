@@ -17,35 +17,11 @@ namespace _halftheory {
         public int osc_inPort = 8888;
         public string osc_outIP = "127.0.0.1";
         public int osc_outPort = 6161;
+        //mouselook
+        public bool mouselook_enabled = false;
 
+        // animations
         public string currentAnimationName;
-
-        public void loadToObjects() {
-            if (MainSettingsVars.stereo3dComponent != null) {
-                MainSettingsVars.stereo3dComponent.enabled = stereo3d_enabled;
-                MainSettingsVars.stereo3dComponent.interaxial = stereo3d_interaxial;
-                MainSettingsVars.stereo3dComponent.zeroPrlxDist = stereo3d_zeroPrlxDist;
-                MainSettingsVars.stereo3dComponent.H_I_T = stereo3d_H_I_T;
-            }
-            if (MainSettingsVars.oscComponent != null) {
-                MainSettingsVars.oscComponent.inPort = osc_inPort;
-                MainSettingsVars.oscComponent.outIP = osc_outIP;
-                MainSettingsVars.oscComponent.outPort = osc_outPort;
-            }
-        }
-        public void saveFromObjects() {
-            if (MainSettingsVars.stereo3dComponent != null) {
-                stereo3d_enabled = MainSettingsVars.stereo3dComponent.enabled;
-                stereo3d_interaxial = MainSettingsVars.stereo3dComponent.interaxial;
-                stereo3d_zeroPrlxDist = MainSettingsVars.stereo3dComponent.zeroPrlxDist;
-                stereo3d_H_I_T = MainSettingsVars.stereo3dComponent.H_I_T;
-            }
-            if (MainSettingsVars.oscComponent != null) {
-                osc_inPort = MainSettingsVars.oscComponent.inPort;
-                osc_outIP = MainSettingsVars.oscComponent.outIP;
-                osc_outPort = MainSettingsVars.oscComponent.outPort;
-            }
-        }
     }
 
     public static class MainSettingsVars {
@@ -53,13 +29,11 @@ namespace _halftheory {
         public static bool initialized = false;
 
         /* DATA */
-        // dataPath
+        public static MainSettingsData data;
         public static string dataPathSuffix = "_halftheory/Data";
         public static string dataPath;
         public static string dataFilePathSuffix = "MainSettingsData.json";
         public static string dataFilePath;
-        // data
-        public static MainSettingsData data;
 
         /* OBJECTS + COMPONENTS */
         // camera
@@ -68,54 +42,46 @@ namespace _halftheory {
         // light
         public static GameObject lightObject;
         public static Light lightComponent;
+        // mouselook
+        public static MouseLook mouselookComponent;
         // stereo3d
         public static stereo3dCameraSBS stereo3dComponent;
         // osc
         public static GameObject oscObject;
         public static OSC oscComponent;
-        // after data loaded
+        // get these after data is loaded
         public static GameObject currentAnimationObject;
         public static OSC_Animation currentAnimationComponent;
 
-        public static bool hasDataPath() {
-            if (dataPath != null) {
-                return (true);
-            }
-            if (Directory.Exists(Application.dataPath+"/"+dataPathSuffix)) {
-                dataPath = Application.dataPath+"/"+dataPathSuffix;
-                return (true);
-            }
-            else if (Directory.Exists(Application.persistentDataPath+"/"+dataPathSuffix)) {
-                dataPath = Application.persistentDataPath+"/"+dataPathSuffix;
-                return (true);
-            }
-            Directory.CreateDirectory(Application.dataPath+"/"+dataPathSuffix);
-            if (Directory.Exists(Application.dataPath+"/"+dataPathSuffix)) {
-                dataPath = Application.dataPath+"/"+dataPathSuffix;
-                return (true);
-            }
-            Directory.CreateDirectory(Application.persistentDataPath+"/"+dataPathSuffix);
-            if (Directory.Exists(Application.persistentDataPath+"/"+dataPathSuffix)) {
-                dataPath = Application.persistentDataPath+"/"+dataPathSuffix;
-                return (true);
-            }
-            return (false);
-        }
-
-        public static bool hasData() {
-            if (data != null) {
-                return (true);
-            }
+        public static bool loadData() {
             data = ScriptableObject.CreateInstance<MainSettingsData>();
-            dataFilePath = dataPath+"/"+dataFilePathSuffix;
+            bool test = hasDataPath();
+            if (!test) {
+                return (false);
+            }
+            // try saved file
             if (File.Exists(dataFilePath)) {
                 BinaryFormatter bf = new BinaryFormatter();
                 FileStream file = File.Open(dataFilePath, FileMode.Open);
                 JsonUtility.FromJsonOverwrite((string)bf.Deserialize(file), data);
                 file.Close();
-                data.loadToObjects();
+                if (stereo3dComponent != null) {
+                    stereo3dComponent.enabled = data.stereo3d_enabled;
+                    stereo3dComponent.interaxial = data.stereo3d_interaxial;
+                    stereo3dComponent.zeroPrlxDist = data.stereo3d_zeroPrlxDist;
+                    stereo3dComponent.H_I_T = data.stereo3d_H_I_T;
+                }
+                if (oscComponent != null) {
+                    oscComponent.inPort = data.osc_inPort;
+                    oscComponent.outIP = data.osc_outIP;
+                    oscComponent.outPort = data.osc_outPort;
+                }
+                if (mouselookComponent != null) {
+                    mouselookComponent.enabled = data.mouselook_enabled;
+                }
                 return (true);
             }
+            // new
             else {
                 saveData();
             }
@@ -124,32 +90,84 @@ namespace _halftheory {
             }
             return (false);
         }
-
         public static void saveData() {
             if (data == null) {
                 return;
             }
-            data.saveFromObjects();
+            if (stereo3dComponent != null) {
+                data.stereo3d_enabled = stereo3dComponent.enabled;
+                data.stereo3d_interaxial = stereo3dComponent.interaxial;
+                data.stereo3d_zeroPrlxDist = stereo3dComponent.zeroPrlxDist;
+                data.stereo3d_H_I_T = stereo3dComponent.H_I_T;
+            }
+            if (oscComponent != null) {
+                data.osc_inPort = oscComponent.inPort;
+                data.osc_outIP = oscComponent.outIP;
+                data.osc_outPort = oscComponent.outPort;
+            }
+            if (mouselookComponent != null) {
+                data.mouselook_enabled = mouselookComponent.enabled;
+            }
+            bool test = hasDataPath();
+            if (!test) {
+                return;
+            }
             BinaryFormatter bf = new BinaryFormatter();
             FileStream file = File.Create(dataFilePath);
             var json = JsonUtility.ToJson(data);
             bf.Serialize(file, json);
             file.Close();
         }
-
-        public static bool hasAnimationObject() {
-            if (currentAnimationObject != null) {
+        public static bool hasDataPath() {
+            if (dataPath != null) {
                 return (true);
             }
+            if (Directory.Exists(Application.dataPath+"/"+dataPathSuffix)) {
+                dataPath = Application.dataPath+"/"+dataPathSuffix;
+                dataFilePath = dataPath+"/"+dataFilePathSuffix;
+                return (true);
+            }
+            else if (Directory.Exists(Application.persistentDataPath+"/"+dataPathSuffix)) {
+                dataPath = Application.persistentDataPath+"/"+dataPathSuffix;
+                dataFilePath = dataPath+"/"+dataFilePathSuffix;
+                return (true);
+            }
+            Directory.CreateDirectory(Application.dataPath+"/"+dataPathSuffix);
+            if (Directory.Exists(Application.dataPath+"/"+dataPathSuffix)) {
+                dataPath = Application.dataPath+"/"+dataPathSuffix;
+                dataFilePath = dataPath+"/"+dataFilePathSuffix;
+                return (true);
+            }
+            Directory.CreateDirectory(Application.persistentDataPath+"/"+dataPathSuffix);
+            if (Directory.Exists(Application.persistentDataPath+"/"+dataPathSuffix)) {
+                dataPath = Application.persistentDataPath+"/"+dataPathSuffix;
+                dataFilePath = dataPath+"/"+dataFilePathSuffix;
+                return (true);
+            }
+            return (false);
+        }
+        public static bool hasData() {
+            if (data != null) {
+                return (true);
+            }
+            bool test = loadData();
+            if (test) {
+                return (true);
+            }
+            return (false);
+        }
+
+        public static bool loadAnimationObject() {
             if (oscObject == null) {
                 return (false);
             }
             Transform testTransform = oscObject.transform;
+            // try saved name
             if (!string.IsNullOrEmpty(data.currentAnimationName)) {
                 testTransform = oscObject.transform.Find(data.currentAnimationName);
             }
+            // try first child
             else if (oscObject.transform.childCount > 0) {
-                // try first child
                 testTransform = oscObject.transform.GetChild(0);
             }
             if (testTransform && testTransform.GetComponent<OSC_Animation>()) {
@@ -158,19 +176,31 @@ namespace _halftheory {
                 data.currentAnimationName = currentAnimationObject.name;
                 return (true);
             }
-            makeAnimationObject();
+            // new
+            else {
+                makeAnimationObject();
+            }
             if (currentAnimationObject != null) {
                 return (true);
             }
             return (false);
         }
-
         public static void makeAnimationObject() {
             string objectName = DateTime.Now.ToString("yyyyMMddHHmmss");
             currentAnimationObject = new GameObject(objectName, typeof(OSC_Animation));
             currentAnimationObject.transform.parent = oscObject.transform;
             currentAnimationComponent = currentAnimationObject.GetComponent<OSC_Animation>();
             data.currentAnimationName = objectName;
+        }
+        public static bool hasAnimationObject() {
+            if (currentAnimationObject != null) {
+                return (true);
+            }
+            bool test = loadAnimationObject();
+            if (test) {
+                return (true);
+            }
+            return (false);
         }
     }
 
@@ -186,6 +216,8 @@ namespace _halftheory {
             if (GetComponent<Camera>()) {
                 MainSettingsVars.mainCamObject = this.gameObject;
                 MainSettingsVars.mainCamComponent = GetComponent<Camera>();
+                MainSettingsVars.mainCamComponent.clearFlags = CameraClearFlags.SolidColor;
+                MainSettingsVars.mainCamComponent.backgroundColor = Color.black;
             }
             else {
                 Debug.Log("HALFTHEORY: "+this.GetType()+": Camera not found");
@@ -201,6 +233,11 @@ namespace _halftheory {
             }
             else {
                 Debug.Log("HALFTHEORY: "+this.GetType()+": Light not found");
+            }
+
+            // mouselook
+            if (GetComponent<MouseLook>()) {
+                MainSettingsVars.mouselookComponent = GetComponent<MouseLook>();
             }
 
             // stereo3d
@@ -223,32 +260,17 @@ namespace _halftheory {
                 return;
             }
 
-            // disable MouseLook on build
-            /*
-            #if UNITY_STANDALONE
-            if (GetComponent<MouseLook>()) {
-                GetComponent<MouseLook>().enabled = false;
-            }
-            #endif
-            */
-
-            // dataPath
-            bool test = MainSettingsVars.hasDataPath();
-            if (!test) {
-                Debug.Log("HALFTHEORY: "+this.GetType()+": hasDataPath failed");
-                return;
-            }
             // data
-            test = MainSettingsVars.hasData();
+            bool test = MainSettingsVars.loadData();
             if (!test) {
-                Debug.Log("HALFTHEORY: "+this.GetType()+": hasData failed");
+                Debug.Log("HALFTHEORY: "+this.GetType()+": loadData failed");
                 return;
             }
 
-            // after data loaded
-            test = MainSettingsVars.hasAnimationObject();
+            // get these after data is loaded
+            test = MainSettingsVars.loadAnimationObject();
             if (!test) {
-                Debug.Log("HALFTHEORY: "+this.GetType()+": hasAnimationObject failed");
+                Debug.Log("HALFTHEORY: "+this.GetType()+": loadAnimationObject failed");
                 return;
             }
             if (!MainSettingsVars.oscObject.GetComponent<OSC_Distributor>()) {
@@ -263,9 +285,7 @@ namespace _halftheory {
         }
 
         void OnDisable() {
-            if (MainSettingsVars.initialized) {
-                MainSettingsVars.saveData();
-            }
+            MainSettingsVars.saveData();
         }
     }
 
