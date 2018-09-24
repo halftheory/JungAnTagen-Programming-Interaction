@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +13,7 @@ namespace _halftheory {
 
 		public string objectName;
 
-		public meshTopology meshTopologySelect = meshTopology.Lines;
+		public meshTopology meshTopologySelect = meshTopology.LineStrip;
 		public meshColor meshColorSelect = meshColor.white;
 		public meshShader meshShaderSelect = meshShader.Color;
 		public float alpha = 1f;
@@ -23,6 +22,7 @@ namespace _halftheory {
 		public float rotateSpeed = 0;
 		public float smoothTime = 0;
 		public float clearTime = 0;
+		public bool noClearTime = false;
 	}
 
 	[RequireComponent(typeof(MeshFilter)), RequireComponent(typeof(MeshRenderer))]
@@ -39,6 +39,7 @@ namespace _halftheory {
 		public float rotateSpeed;
 		public float smoothTime;
 		public float clearTime;
+		public bool noClearTime;
 
 		private List<Color> colorList = new List<Color>(new Color[]{
 			Color.white, Color.red, Color.black, Color.blue, Color.cyan, Color.green, Color.grey, Color.magenta, Color.yellow
@@ -70,7 +71,7 @@ namespace _halftheory {
             }
 		}
 		void Start() {
-            loadData();
+            //loadData();
 			if (mesh == null && GetComponent<MeshFilter>() && GetComponent<MeshRenderer>()) {
 			    mesh = new Mesh();
 			    GetComponent<MeshFilter>().mesh = mesh;
@@ -80,9 +81,9 @@ namespace _halftheory {
 			}
         }
         void OnDisable() {
-        	saveData();
+        	//saveData();
         }
-        void loadData() {
+        public void loadData() {
 			if (data != null) {
 	        	meshTopologySelect = data.meshTopologySelect;
 	        	meshColorSelect = data.meshColorSelect;
@@ -93,9 +94,10 @@ namespace _halftheory {
 	        	rotateSpeed = data.rotateSpeed;
 	        	smoothTime = data.smoothTime;
 	        	clearTime = data.clearTime;
+	        	noClearTime = data.noClearTime;
 	        }
         }
-        void saveData() {
+        public void saveData() {
 			if (data != null) {
 	        	data.objectName = this.gameObject.name;
 	        	data.meshTopologySelect = meshTopologySelect;
@@ -107,6 +109,7 @@ namespace _halftheory {
 	        	data.rotateSpeed = rotateSpeed;
 	        	data.smoothTime = smoothTime;
 	        	data.clearTime = clearTime;
+	        	data.noClearTime = noClearTime;
 	        }
         }
 
@@ -178,7 +181,7 @@ namespace _halftheory {
 
 	        float frameCount = (float)Time.frameCount;
 	        // already in the list
-			if (pointsStart.Count > point) {
+			if (pointsStart.Count > point && !noClearTime) {
 				// smoothing
 				if (smoothTime > 0.0f) {
 					x = Mathf.SmoothDamp(pointsStart[point][0], x, ref smoothX, smoothTime);
@@ -196,8 +199,8 @@ namespace _halftheory {
 					// compare existing vector, maybe keep it
 					int oldFrameCount = (int)pointsStart[point][3];
 					if (oldFrameCount >= ((int)frameCount - clearTimeFrames)) {
-			        	pointsStart.Add(new Vector4(x,y,z,frameCount));
-				        pointsEnd.Add(new Vector3(endX,endY,endZ));
+						pointsStart.Add(new Vector4(x,y,z,frameCount));
+						pointsEnd.Add(new Vector3(endX,endY,endZ));
 					}
 					else {
 						pointsStart[point] = new Vector4(x,y,z,frameCount);
@@ -221,7 +224,7 @@ namespace _halftheory {
 	        //List<Vector3> verticesList = mesh.vertices.ToList();
 			for (int point = 0; point < pointsStart.Count; point++) {
 				// check if old frame
-				if ((int)pointsStart[point][3] < (Time.frameCount - clearTimeFrames - 3)) { // 3 = correction number
+				if ((int)pointsStart[point][3] < (Time.frameCount - clearTimeFrames - 3) && !noClearTime) { // 3 = correction number
 					pointsStart.RemoveAt(point);
 					pointsEnd.RemoveAt(point);
 					continue;
@@ -258,57 +261,6 @@ namespace _halftheory {
 			// rotate
 			if (rotateSpeed != 0.0f) {
 				transform.RotateAround(worldCenter, transform.up, Time.smoothDeltaTime * (rotateSpeed * 90f));
-			}
-		}
-	}
-
-    [CustomEditor(typeof(OSC_Mesh))]
-    [CanEditMultipleObjects]
-    public class OSC_Mesh_Editor : Editor {
-
-        SerializedProperty meshTopologySelect;
-        SerializedProperty meshColorSelect;
-        SerializedProperty meshShaderSelect;
-        SerializedProperty alpha;
-        SerializedProperty randomX;
-        SerializedProperty randomY;
-        SerializedProperty rotateSpeed;
-        SerializedProperty smoothTime;
-        SerializedProperty clearTime;
-
-        void OnEnable() {
-			meshTopologySelect = serializedObject.FindProperty("meshTopologySelect");
-			meshColorSelect = serializedObject.FindProperty("meshColorSelect");
-			meshShaderSelect = serializedObject.FindProperty("meshShaderSelect");
-			alpha = serializedObject.FindProperty("alpha");
-			randomX = serializedObject.FindProperty("randomX");
-			randomY = serializedObject.FindProperty("randomY");
-			rotateSpeed = serializedObject.FindProperty("rotateSpeed");
-			smoothTime = serializedObject.FindProperty("smoothTime");
-			clearTime = serializedObject.FindProperty("clearTime");
-		}
-
-		public override void OnInspectorGUI() {
-			// Show the editor controls.
-			serializedObject.Update();
-
-	 		EditorGUILayout.PropertyField(meshTopologySelect, new GUIContent("Topology",""));
-	 		EditorGUILayout.PropertyField(meshColorSelect, new GUIContent("Color",""));
-	 		EditorGUILayout.PropertyField(meshShaderSelect, new GUIContent("Material",""));
-            if (meshShaderSelect.enumValueIndex == 2) {
-                EditorGUI.indentLevel++;
-				alpha.floatValue = EditorGUILayout.Slider(new GUIContent("Opacity",""), alpha.floatValue, 0, 1f);
-                EditorGUI.indentLevel--;
-            }
-	 		EditorGUILayout.PropertyField(randomX, new GUIContent("Randomize end point X",""));
-	 		EditorGUILayout.PropertyField(randomY, new GUIContent("Randomize end point Y",""));
-			rotateSpeed.floatValue = EditorGUILayout.Slider(new GUIContent("Rotate forward/back",""), rotateSpeed.floatValue, -1f, 1f);
-			smoothTime.floatValue = EditorGUILayout.Slider(new GUIContent("Smooth time (sec)",""), smoothTime.floatValue, 0, 1f);
-			clearTime.floatValue = EditorGUILayout.Slider(new GUIContent("Clear time (sec)",""), clearTime.floatValue, 0, 1f);
-
-			serializedObject.ApplyModifiedProperties();
-			if (GUI.changed) {
-				EditorUtility.SetDirty(target);
 			}
 		}
 	}
