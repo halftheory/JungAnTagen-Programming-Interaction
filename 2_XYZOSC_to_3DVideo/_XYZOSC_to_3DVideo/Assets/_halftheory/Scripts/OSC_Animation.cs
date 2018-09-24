@@ -206,6 +206,7 @@ namespace _halftheory {
 				}
 				else {
 					newMesh.name = newMesh.GetComponent<OSC_Mesh>().data.objectName;
+					newMesh.GetComponent<OSC_Mesh>().loadData();
 				}
 			}
         }
@@ -215,7 +216,8 @@ namespace _halftheory {
         		return;
         	}
 			foreach (Transform child in transform) {
-				child.gameObject.GetComponent<OSC_Mesh>().data.objectName = child.name;
+				child.gameObject.GetComponent<OSC_Mesh>().saveData();
+				//child.gameObject.GetComponent<OSC_Mesh>().data.objectName = child.name;
 				var json = JsonUtility.ToJson(child.gameObject.GetComponent<OSC_Mesh>().data);
 				data.meshData.Add(json);
 			}
