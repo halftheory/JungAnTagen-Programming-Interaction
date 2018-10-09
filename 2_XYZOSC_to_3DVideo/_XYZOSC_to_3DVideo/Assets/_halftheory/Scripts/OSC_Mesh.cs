@@ -23,6 +23,7 @@ namespace _halftheory {
 		public float smoothTime = 0;
 		public float clearTime = 0;
 		public bool noClearTime = false;
+		public float traceTime = 0;
 	}
 
 	[RequireComponent(typeof(MeshFilter)), RequireComponent(typeof(MeshRenderer))]
@@ -40,6 +41,7 @@ namespace _halftheory {
 		public float smoothTime;
 		public float clearTime;
 		public bool noClearTime;
+		public float traceTime;
 
 		private List<Color> colorList = new List<Color>(new Color[]{
 			Color.white, Color.red, Color.black, Color.blue, Color.cyan, Color.green, Color.grey, Color.magenta, Color.yellow
@@ -64,6 +66,7 @@ namespace _halftheory {
 		private float smoothEndY = 0.0f;
 		private float smoothEndZ = 0.0f;
 		private int clearTimeFrames = 0;
+		private bool currentNoClearTime = false;
 
 		void OnEnable() {
 			if (data == null) {
@@ -95,6 +98,7 @@ namespace _halftheory {
 	        	smoothTime = data.smoothTime;
 	        	clearTime = data.clearTime;
 	        	noClearTime = data.noClearTime;
+	        	traceTime = data.traceTime;
 	        }
         }
         public void saveData() {
@@ -110,6 +114,7 @@ namespace _halftheory {
 	        	data.smoothTime = smoothTime;
 	        	data.clearTime = clearTime;
 	        	data.noClearTime = noClearTime;
+	        	data.traceTime = traceTime;
 	        }
         }
 
@@ -219,6 +224,17 @@ namespace _halftheory {
 				return;
 			}
 
+			// if noClearTime turned off, make every stored frame the current frame
+			if (!noClearTime && currentNoClearTime && pointsStart.Count > 0) {
+	            //Debug.Log("HALFTHEORY: "+this.GetType()+": Update : noClearTime "+noClearTime);
+	            float frameCount = (float)Time.frameCount;
+	            for (int p = 0; p < pointsStart.Count; p++) {
+	            	Vector4 oldPoint = pointsStart[p];
+	            	pointsStart[p] = new Vector4(oldPoint[0],oldPoint[1],oldPoint[2],frameCount);
+	            }
+			}
+			currentNoClearTime = noClearTime;
+
 			// make verticesList
 			List<Vector3> verticesList = new List<Vector3>();
 	        //List<Vector3> verticesList = mesh.vertices.ToList();
@@ -233,30 +249,49 @@ namespace _halftheory {
 				verticesList.Add(pointsEnd[point]);
 			}
 
-			// set verticesList
+			// clear mesh
 			if (verticesList.Count == 0) {
 				mesh.Clear();
-				return;
+				if (transform.childCount == 0) {
+	        		return;
+	        	}
 			}
 			else if (verticesList.Count != mesh.vertices.Length) {
 				mesh.Clear();
 			}
-	        mesh.SetVertices(verticesList);
 
-	        // topology
-	        int[] indices = Enumerable.Range(0, mesh.vertices.Length).ToArray();
-	        if (meshTopologySelect == meshTopology.Lines) {
-	        	mesh.SetIndices(indices, MeshTopology.Lines, 0);
-	        }
-	        else if (meshTopologySelect == meshTopology.LineStrip) {
-	        	mesh.SetIndices(indices, MeshTopology.LineStrip, 0);
-	        }
-	        else {
-				mesh.SetIndices(indices, MeshTopology.Points, 0);
-	        }
+			if (verticesList.Count > 0) {
+				// set verticesList
+		        mesh.SetVertices(verticesList);
 
-	        // color
-			setMaterialColor();
+		        // topology
+		        int[] indices = Enumerable.Range(0, mesh.vertices.Length).ToArray();
+		        if (meshTopologySelect == meshTopology.Lines) {
+		        	mesh.SetIndices(indices, MeshTopology.Lines, 0);
+		        }
+		        else if (meshTopologySelect == meshTopology.LineStrip) {
+		        	mesh.SetIndices(indices, MeshTopology.LineStrip, 0);
+		        }
+		        else {
+					mesh.SetIndices(indices, MeshTopology.Points, 0);
+		        }
+
+		        // color
+				setMaterialColor();
+
+				// trace mesh
+				if (traceTime > 0.0f) {
+					GameObject traceObj = new GameObject("trace", typeof(OSC_Mesh_Trace));
+					traceObj.transform.parent = transform;
+					traceObj.GetComponent<MeshFilter>().mesh = mesh;
+					traceObj.GetComponent<MeshRenderer>().material = GetComponent<MeshRenderer>().material;
+					traceObj.GetComponent<OSC_Mesh_Trace>().traceTime = traceTime;
+					if (meshShaderSelect == meshShader.Transparent) {
+						traceObj.GetComponent<OSC_Mesh_Trace>().initialAlpha = alpha;
+					}
+					traceObj.GetComponent<OSC_Mesh_Trace>().isInit();
+				}
+			}
 
 			// rotate
 			if (rotateSpeed != 0.0f) {

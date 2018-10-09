@@ -1,6 +1,6 @@
 OSXStandalone
 PlayerPath?
-/projects_working/stefanjuster-sine-machine/_project/2_XYZOSC_to_3DVideo/capture/_XYZOSC_to_3DVideo.app
+/projects_working/stefanjuster-sine-machine/_project/JungAnTagen-Programming-Interaction/2_XYZOSC_to_3DVideo/builds/_XYZOSC_to_3DVideo_display2.app
 SceneListBegin?
 Assets/Scenes/XYZOSC_to_3DVideo.unity
 SceneListEnd?
@@ -16,7 +16,7 @@ ff05dcdf90651c3d98a9cad3df5e471e UnityEngine.Timeline.dll:UnityEngine.Timeline.C
 30afa8783a8bbee2e465ec9ce1efaee2 UnityEngine.Timeline.dll:UnityEngine.Timeline.GroupTrack
 30afa8783a8bbee2e465ec9ce1efaee2 UnityEngine.Timeline.dll:UnityEngine.Timeline.PlayableTrack
 607d64d2c4bc76ac9876e6f7b9cc7edf UnityEngine.Timeline.dll:UnityEngine.Timeline.TimelineAsset
-3830de41958ca52e3736ddcca8c9c66f Assembly-CSharp.dll:_halftheory.OSC_Mesh
+3446b5ec60ecb58fb2c6ecc4c110b488 Assembly-CSharp.dll:_halftheory.OSC_Mesh
 a35dc9cca2faebc5f5f1aeb9e8e47bbe UnityEngine.UI.dll:UnityEngine.UI.AspectRatioFitter
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.UI.dll:UnityEngine.EventSystems.BaseInput
 49cd62a578efc0a599b810a2b66cd49c UnityEngine.UI.dll:UnityEngine.UI.Button
