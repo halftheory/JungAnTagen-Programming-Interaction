@@ -16,6 +16,7 @@ namespace _halftheory {
         SerializedProperty smoothTime;
         SerializedProperty clearTime;
         SerializedProperty noClearTime;
+        SerializedProperty traceTime;
 
         void OnEnable() {
 			meshTopologySelect = serializedObject.FindProperty("meshTopologySelect");
@@ -28,6 +29,7 @@ namespace _halftheory {
 			smoothTime = serializedObject.FindProperty("smoothTime");
 			clearTime = serializedObject.FindProperty("clearTime");
 			noClearTime = serializedObject.FindProperty("noClearTime");
+			traceTime = serializedObject.FindProperty("traceTime");
 		}
 
 		public override void OnInspectorGUI() {
@@ -45,9 +47,10 @@ namespace _halftheory {
 	 		EditorGUILayout.PropertyField(randomX, new GUIContent("Randomize end point X",""));
 	 		EditorGUILayout.PropertyField(randomY, new GUIContent("Randomize end point Y",""));
 			rotateSpeed.floatValue = EditorGUILayout.Slider(new GUIContent("Rotate forward/back",""), rotateSpeed.floatValue, -1f, 1f);
-			smoothTime.floatValue = EditorGUILayout.Slider(new GUIContent("Smooth time (sec)",""), smoothTime.floatValue, 0, 1f);
+			smoothTime.floatValue = EditorGUILayout.Slider(new GUIContent("Smooth time (sec)",""), smoothTime.floatValue, 0, 0.5f);
 			clearTime.floatValue = EditorGUILayout.Slider(new GUIContent("Clear time (sec)",""), clearTime.floatValue, 0, 30f);
 	 		EditorGUILayout.PropertyField(noClearTime, new GUIContent("No clear time",""));
+			traceTime.floatValue = EditorGUILayout.Slider(new GUIContent("Trace time (sec)",""), traceTime.floatValue, 0, 2f);
 
 			serializedObject.ApplyModifiedProperties();
 			if (GUI.changed) {
