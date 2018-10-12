@@ -70,7 +70,7 @@ function scale_frequency(val) {
 	return objOut.getvalueof();
 }
 
-var z_ampstats;
+var ampstats_max, ampstats_min;
 ampstats.immediate = 1;
 function ampstats() {
 	if (arguments.length != 4) {
@@ -87,24 +87,27 @@ function ampstats() {
 	var l_max = arguments[1];
 	var r_min = Math.abs(arguments[2]);
 	var r_max = arguments[3];
-	var val = Math.max(l_min, l_max, r_min, r_max);
-	this.patcher.getnamed("volume_in").message("float", val);
-    var objOut = this.patcher.getnamed("volume_out");
-	z_ampstats = objOut.getvalueof();
+	ampstats_max = Math.max(l_min, l_max, r_min, r_max);
+	ampstats_min = Math.min(l_min, l_max, r_min, r_max);
 }
 
 freqpeak.immediate = 1;
 function freqpeak() {
-	getpoints(arguments, false);
+	getpoints(arguments, false, false);
 }
 
 freqpeak_sort.immediate = 1;
 function freqpeak_sort() {
-	getpoints(arguments, true);
+	getpoints(arguments, true, false);
+}
+
+freqpeak_sort_fill.immediate = 1;
+function freqpeak_sort_fill() {
+	getpoints(arguments, true, true);
 }
 
 getpoints.local = 1;
-function getpoints(arguments, sort) {
+function getpoints(arguments, sort, fill) {
 	if (level === 0) {
 		return;
 	}
@@ -117,15 +120,19 @@ function getpoints(arguments, sort) {
 	if (arguments.length === 0 || Math.abs(arguments.length % 2) == 1) {
 		return;
 	}
-	if (typeof z_ampstats === 'undefined') {
+	if (typeof ampstats_max === 'undefined') {
+		return;
+	}
+	else if (ampstats_max === 0) {
 		return;
 	}
 	// each pair of arguments is freq1 amp1 freq2 amp2...
 	// first half of list is left audio, last half is right audio
 	var res = {};
-	var res_index = [];
 	var id = 0;
 	var x,y,z;
+	var amp_max = 0;
+	var amp_min = 1;
 	for(var i = 0; i < arguments.length / 2; i++) {
 		var l_freq = parseFloat(arguments[i]);
 		var l_amp = parseFloat(arguments[i + 1]);
@@ -146,25 +153,40 @@ function getpoints(arguments, sort) {
 		else {
 			y = scale_frequency(r_freq);
 		}
-		z = z_ampstats; // todo: refresh this?
+		z = Math.max(l_amp, r_amp);
+		if (z > amp_max) {
+			amp_max = z;
+		}
+		else if (z < amp_min) {
+			amp_min = z;
+		}
+		res[id] = [x,y,z];
+		id++;
+		i++;
+	}
+	if (Object.keys(res).length === 0) {
+		return;
+	}
+	// fix relative Z + index
+	var res_index = [];
+	this.patcher.getnamed("amp_min").message("float", amp_min);
+	this.patcher.getnamed("amp_max").message("float", amp_max);
+	this.patcher.getnamed("ampstats_min").message("float", ampstats_min);
+	this.patcher.getnamed("ampstats_max").message("float", ampstats_max);
+	for (var key in res) {
+		this.patcher.getnamed("volume_in").message("float", res[key][2]);
+	    var objOut = this.patcher.getnamed("volume_out");
+		z = objOut.getvalueof();
+		res[key][2] = z;
 		if (!sort) {
-			outlet(0, id, x, y, z);
-			if ((id + 1) >= peaks) {
+			outlet(0, key, res[key][0], res[key][1], res[key][2]);
+			if ((key + 1) >= peaks) {
 				return;
 			}
 		}
 		else {
-			res[id] = [x,y,z];
-			res_index.push([id,z]);
+			res_index.push([key,z]);
 		}
-		id++;
-		i++;
-	}
-	if (!sort) {
-		return;
-	}
-	if (res_index.length === 0) {
-		return;
 	}
 	res_index.sort(function(a, b){
 		if (z_h < z_l) {

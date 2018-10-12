@@ -2063,6 +2063,96 @@
 						"subpatcher_template" : "",
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-11",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "int" ],
+									"patching_rect" : [ 889.0, 163.0, 139.0, 22.0 ],
+									"style" : "",
+									"text" : "conformpath native boot"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-9",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "bang", "bang" ],
+									"patching_rect" : [ 677.5, 202.0, 54.0, 22.0 ],
+									"style" : "",
+									"text" : "togedge"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-5",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 677.5, 240.0, 95.0, 22.0 ],
+									"style" : "",
+									"text" : "/audio_file_path"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-8",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "bang", "bang" ],
+									"patching_rect" : [ 785.0, 202.0, 54.0, 22.0 ],
+									"style" : "",
+									"text" : "togedge"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-6",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 785.0, 240.0, 814.0, 35.0 ],
+									"style" : "",
+									"text" : "/audio_file_path \"/projects_working/stefanjuster-sine-machine/_test-material/audio/Additive Synthesis, Razor/04 Notch Filter/04 Notch Filter 2.wav\""
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-10",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 785.0, 292.0, 68.0, 22.0 ],
+									"style" : "",
+									"text" : "s osc_vars"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-4",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 889.0, 202.0, 112.0, 22.0 ],
+									"style" : "",
+									"text" : "/audio_file_path $1"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-14",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
@@ -2279,7 +2369,7 @@
 										"followglobaltempo" : 0,
 										"formantcorrection" : 0,
 										"mode" : "basic",
-										"originallength" : [ 15841.306122, "ticks" ],
+										"originallength" : [ 20480.0, "ticks" ],
 										"originaltempo" : 120.0,
 										"pitchcorrection" : 0,
 										"quality" : "basic",
@@ -2468,6 +2558,13 @@
  ],
 						"lines" : [ 							{
 								"patchline" : 								{
+									"destination" : [ "obj-4", 0 ],
+									"source" : [ "obj-11", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-2", 0 ],
 									"order" : 1,
 									"source" : [ "obj-12", 0 ]
@@ -2533,6 +2630,13 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-6", 1 ],
+									"source" : [ "obj-4", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-85", 0 ],
 									"source" : [ "obj-47", 0 ]
 								}
@@ -2547,8 +2651,22 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-10", 0 ],
+									"source" : [ "obj-5", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-68", 0 ],
 									"source" : [ "obj-57", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-10", 0 ],
+									"source" : [ "obj-6", 0 ]
 								}
 
 							}
@@ -2610,7 +2728,16 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-11", 0 ],
+									"order" : 0,
+									"source" : [ "obj-74", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-7", 0 ],
+									"order" : 1,
 									"source" : [ "obj-74", 0 ]
 								}
 
@@ -2645,8 +2772,15 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-6", 0 ],
+									"source" : [ "obj-8", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-66", 0 ],
-									"order" : 1,
+									"order" : 2,
 									"source" : [ "obj-80", 0 ]
 								}
 
@@ -2654,6 +2788,14 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-79", 0 ],
+									"order" : 1,
+									"source" : [ "obj-80", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-8", 0 ],
 									"order" : 0,
 									"source" : [ "obj-80", 0 ]
 								}
@@ -2662,7 +2804,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-47", 0 ],
-									"order" : 2,
+									"order" : 3,
 									"source" : [ "obj-81", 0 ]
 								}
 
@@ -2670,7 +2812,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-49", 0 ],
-									"order" : 0,
+									"order" : 1,
 									"source" : [ "obj-81", 0 ]
 								}
 
@@ -2678,7 +2820,15 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-60", 0 ],
-									"order" : 1,
+									"order" : 2,
+									"source" : [ "obj-81", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-9", 0 ],
+									"order" : 0,
 									"source" : [ "obj-81", 0 ]
 								}
 
@@ -2708,6 +2858,13 @@
 								"patchline" : 								{
 									"destination" : [ "obj-79", 0 ],
 									"source" : [ "obj-87", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-5", 0 ],
+									"source" : [ "obj-9", 0 ]
 								}
 
 							}
@@ -3713,7 +3870,7 @@
 					"presentation" : 1,
 					"presentation_rect" : [ 660.0, 45.0, 360.0, 30.0 ],
 					"style" : "",
-					"text" : "\"work:/projects_working/stefanjuster-sine-machine/_test-material/audio/Additive Synthesis, Razor/04 Notch Filter/04 Notch Filter 1.wav\"",
+					"text" : "\"work:/projects_working/stefanjuster-sine-machine/_test-material/audio/Additive Synthesis, Razor/04 Notch Filter/04 Notch Filter 2.wav\"",
 					"varname" : "audio_file_path",
 					"wordwrap" : 0
 				}
@@ -6831,13 +6988,13 @@
 						"analysis_frequency_high" : [ 8000 ],
 						"analysis_frequency_low" : [ 20 ],
 						"analysis_frequency_mid" : [ 500 ],
-						"analysis_group0_active" : [ 1 ],
+						"analysis_group0_active" : [ 0 ],
 						"analysis_group0_level" : [ 1.0 ],
-						"analysis_group0_peaks" : [ 1 ],
-						"analysis_group1_active" : [ 1 ],
+						"analysis_group0_peaks" : [ 2 ],
+						"analysis_group1_active" : [ 0 ],
 						"analysis_group1_level" : [ 1.0 ],
 						"analysis_group1_peaks" : [ 2 ],
-						"analysis_group2_active" : [ 1 ],
+						"analysis_group2_active" : [ 0 ],
 						"analysis_group2_level" : [ 1.0 ],
 						"analysis_group2_peaks" : [ 1 ],
 						"analysis_group3_active" : [ 0 ],
@@ -6853,7 +7010,7 @@
 						"analysis_z_high" : [ 2 ],
 						"analysis_z_low" : [ 0 ],
 						"audio_file_loop" : [ 1 ],
-						"audio_file_path" : [ "work:/projects_working/stefanjuster-sine-machine/_test-material/audio/Additive Synthesis, Razor/04 Notch Filter/04 Notch Filter 1.wav" ],
+						"audio_file_path" : [ "work:/projects_working/stefanjuster-sine-machine/_test-material/audio/Additive Synthesis, Razor/04 Notch Filter/04 Notch Filter 2.wav" ],
 						"audio_input_device" : [ 0 ],
 						"audio_output" : [ 1 ],
 						"audio_output_device" : [ 0 ],
@@ -6866,7 +7023,7 @@
 ,
 					"style" : "",
 					"text" : "autopattr",
-					"varname" : "u088006030"
+					"varname" : "u534002016"
 				}
 
 			}
@@ -6909,7 +7066,7 @@
 ,
 					"style" : "",
 					"text" : "pattrstorage @autorestore 1 @savemode 3 @fileusagemode 1",
-					"varname" : "u447006028"
+					"varname" : "u128002014"
 				}
 
 			}
