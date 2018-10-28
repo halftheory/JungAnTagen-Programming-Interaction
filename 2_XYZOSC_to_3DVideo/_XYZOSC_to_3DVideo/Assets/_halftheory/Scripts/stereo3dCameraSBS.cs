@@ -95,12 +95,14 @@ namespace _halftheory {
 				leftCamRecord.tag = "leftCamRecord";
 				rightCamRecord.tag = "rightCamRecord";
 				#if UNITY_EDITOR
+				/*
 					if (EditorApplication.isPlaying) {
 						mainCamComponent.enabled = false;
 					}
 					else {
 						mainCamComponent.enabled = true; // need camera enabled when in edit mode
 					}
+				*/
 				#endif
 			}
 		}
@@ -134,8 +136,8 @@ namespace _halftheory {
 			}
 			leftCam.SetActive(true);
 			rightCam.SetActive(true);
-			leftCamRecord.SetActive(true);
-			rightCamRecord.SetActive(true);
+			leftCamRecord.SetActive(false);
+			rightCamRecord.SetActive(false);
 
 			leftCam.GetComponent<Camera>().CopyFrom(mainCamComponent);
 			rightCam.GetComponent<Camera>().CopyFrom(mainCamComponent);
@@ -161,6 +163,8 @@ namespace _halftheory {
 			rightCam.GetComponent<Camera>().aspect = mainCamComponent.aspect;
 			leftCamRecord.GetComponent<Camera>().aspect = mainCamComponent.aspect;
 			rightCamRecord.GetComponent<Camera>().aspect = mainCamComponent.aspect;
+
+			mainCamComponent.enabled = false;
 		}
 
 		void UpdateView() {

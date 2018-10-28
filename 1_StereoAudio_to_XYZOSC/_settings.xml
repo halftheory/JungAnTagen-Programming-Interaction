@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 
-<pattrstorage name = "u147000801">
+<pattrstorage name = "u005000619">
 	<slot number = "1">
 		<pattr name = "analysis_frequency_high" value = "8000" />
-		<pattr name = "analysis_frequency_low" value = "20" />
-		<pattr name = "analysis_frequency_mid" value = "500" />
+		<pattr name = "analysis_frequency_low" value = "40" />
+		<pattr name = "analysis_frequency_mid" value = "200" />
 		<pattr name = "analysis_group0_active" value = "1" />
 		<pattr name = "analysis_group0_level" value = "1." />
-		<pattr name = "analysis_group0_peaks" value = "1" />
-		<pattr name = "analysis_group1_active" value = "0" />
+		<pattr name = "analysis_group0_peaks" value = "200" />
+		<pattr name = "analysis_group1_active" value = "1" />
 		<pattr name = "analysis_group1_level" value = "1." />
-		<pattr name = "analysis_group1_peaks" value = "1" />
-		<pattr name = "analysis_group2_active" value = "0" />
+		<pattr name = "analysis_group1_peaks" value = "200" />
+		<pattr name = "analysis_group2_active" value = "1" />
 		<pattr name = "analysis_group2_level" value = "1." />
-		<pattr name = "analysis_group2_peaks" value = "1" />
-		<pattr name = "analysis_group3_active" value = "0" />
+		<pattr name = "analysis_group2_peaks" value = "200" />
+		<pattr name = "analysis_group3_active" value = "1" />
 		<pattr name = "analysis_group3_level" value = "1." />
-		<pattr name = "analysis_group3_peaks" value = "1" />
-		<pattr name = "analysis_volume_high" value = "0.9" />
-		<pattr name = "analysis_volume_low" value = "0.1" />
-		<pattr name = "analysis_volume_mid" value = "0.5" />
+		<pattr name = "analysis_group3_peaks" value = "200" />
+		<pattr name = "analysis_volume_high" value = "0.6" />
+		<pattr name = "analysis_volume_low" value = "0.01" />
+		<pattr name = "analysis_volume_mid" value = "0.3" />
 		<pattr name = "analysis_x_high" value = "1" />
 		<pattr name = "analysis_x_low" value = "-1" />
 		<pattr name = "analysis_y_high" value = "1" />

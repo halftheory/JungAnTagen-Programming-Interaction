@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
+using Unity.Collections;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace _halftheory {
@@ -10,21 +12,68 @@ namespace _halftheory {
 
 		public bool initialized = false;
 
-		public int fps = 30;
-		public float x_low;
-		public float x_high;
-		public float y_low;
-		public float y_high;
-		public float z_low;
-		public float z_high;
+		public string audio_file_path;
+		public int _fps = 60;
+		public int fps {
+            get { return _fps; }
+            set { _fps = value;
+            	Initialize();
+            	if (initialized) {
+            		MainSettingsVars.currentAnimationComponent.SettingsFPS();
+            	}
+            }
+		}
+		public float _x_low;
+		public float x_low {
+            get { return _x_low; }
+            set { _x_low = value;
+            	Initialize();
+            }
+		}
+		public float _x_high;
+		public float x_high {
+            get { return _x_high; }
+            set { _x_high = value;
+            	Initialize();
+            }
+		}
+		public float _y_low;
+		public float y_low {
+            get { return _y_low; }
+            set { _y_low = value;
+            	Initialize();
+            }
+		}
+		public float _y_high;
+		public float y_high {
+            get { return _y_high; }
+            set { _y_high = value;
+            	Initialize();
+            }
+		}
+		public float _z_low;
+		public float z_low {
+            get { return _z_low; }
+            set { _z_low = value;
+            	Initialize();
+            }
+		}
+		public float _z_high;
+		public float z_high {
+            get { return _z_high; }
+            set { _z_high = value;
+            	Initialize();
+            }
+		}
 
 	    public float x_center;
 	    public float y_center;
 	    public float z_center;
+		public Vector3 worldCenter;
 
 		public List<string> meshData = new List<string>();
 
-		public bool isInit() {
+		public void Initialize() {
 			bool res = true;
 			if (fps == 0) {
 				res = false;
@@ -39,150 +88,92 @@ namespace _halftheory {
 				res = false;
 			}
 			if (res) {
-				getCenterX();
-				getCenterY();
-				getCenterZ();
-	            Debug.Log("HALFTHEORY: "+this.GetType()+": data.isInit OK");
+			    x_center = (x_low + x_high) / 2f;
+			    y_center = (y_low + y_high) / 2f;
+			    z_center = (z_low + z_high) / 2f;
+				worldCenter = MainSettingsVars.currentAnimationObject.transform.TransformPoint(new Vector3(x_center, y_center, z_center));
+			}
+			else {
+	            Debug.Log("HALFTHEORY: "+this.GetType()+": data.Initialize failed for "+MainSettingsVars.data.currentAnimation);
 			}
 			initialized = res;
-			return res;
-		}
-
-		void getCenterX() {
-		    x_center = (x_low + x_high) / 2f;
-		}
-		void getCenterY() {
-		    y_center = (y_low + y_high) / 2f;
-		}
-		void getCenterZ() {
-		    z_center = (z_low + z_high) / 2f;
 		}
 	}
 
-    [RequireComponent(typeof(Animator))]
+    [RequireComponent(typeof(Animation))]
 	public class OSC_Animation : MonoBehaviour {
 
-		public bool initialized = false;
 		public bool current = false;
+		public bool initialized = false;
 
+        /* DATA */
 		public OSC_Animation_Data data;
-        private string dataFilePathSuffix = "_Data.json";
-        public string dataFilePath;
+        private string dataFileSuffix = "_Data.json";
+        public string dataFile;
+        private string animationFileSuffix = "_Animation.json";
+        public string animationFile;
+        private string pointsFileSuffix = "_Points.json";
+        public string pointsFile;
 
-        // children
-        private GameObject currentMeshObject;
-        private OSC_Mesh currentMeshComponent;
-
-		void Awake() {
-			QualitySettings.vSyncCount = 0;
-		}
-		void Start() {
-			bool test = isCurrent();
-			if (test) {
-				test = data.isInit();
-				if (test) {
-					SettingsFPS();
-					SettingsCamera();
-				}
-			}
-		}
-		void OnEnable() {
-			bool test = isCurrent();
-			if (test) {
-				test = data.isInit();
-				if (test) {
-					SettingsFPS();
-					SettingsCamera();
-				}
-			}
-		}
-		void LateUpdate() {
-			bool test = isCurrent();
-			if (test) {
-	            if (data.initialized) {
-	            	return;
-	            }
-				else if (Application.isPlaying) {
-					test = data.isInit();
-					if (test) {
-						SettingsFPS();
-						SettingsCamera();
+		[HideInInspector] public float activeTime;
+		[HideInInspector] public float frameTime;
+		private bool _active = false;
+		public bool active {
+            get { return _active; }
+            set {
+                if (_active != value) {
+                	if (value) {
+						activeTime = Time.unscaledTime;
+                	}
+                	// live
+                	if (MainSettingsVars.data.currentGameMode == gameMode.live) {
+                		if (value) {
+							points.Clear();
+							SettingsFPS();
+							SettingsCamera();
+						}
 					}
-				}
-			}
-		}
-        void OnDisable() {
-            if (initialized) {
-                saveData();
+                }
+				_active = value;
             }
         }
 
-		private bool isCurrent() {
-			bool res = true;
-			bool test = isInit();
-			if (!test) {
-				res = false;
-			}
-			if (MainSettingsVars.currentAnimationComponent != this) {
-				res = false;
-			}
-			current = res;
-			return res;
-		}
-		private bool isInit() {
-			if (initialized) {
-				return (true);
-			}
-			if (!MainSettingsVars.initialized) {
-				return (false);
-			}
-			if (!this.enabled) {
-				return (false);
-			}
-			bool test = hasData();
-			if (!test) {
-				return (false);
-			}
-			initialized = true;
-			return (true);
-		}
-
-        private bool loadData() {
+        public bool loadData() {
             data = ScriptableObject.CreateInstance<OSC_Animation_Data>();
-            dataFilePath = MainSettingsVars.dataPath+"/"+this.gameObject.name+dataFilePathSuffix;
             // try saved file
-            if (File.Exists(dataFilePath)) {
+            bool test = hasDataFile();
+            if (test) {
                 BinaryFormatter bf = new BinaryFormatter();
-                FileStream file = File.Open(dataFilePath, FileMode.Open);
+                FileStream file = File.Open(dataFile, FileMode.Open);
                 JsonUtility.FromJsonOverwrite((string)bf.Deserialize(file), data);
                 file.Close();
-	        	data.initialized = false;
-                loadMeshData();
-                return (true);
             }
             // new
             else {
                 saveData();
             }
             if (data != null) {
+				data.Initialize();
+                loadMeshData();
                 return (true);
             }
             return (false);
         }
-        void saveData() {
+        public void saveData() {
             if (data == null) {
                 return;
             }
             saveMeshData();
-            if (dataFilePath != null) {
+            bool test = hasDataFolder();
+            if (test) {
             	BinaryFormatter bf = new BinaryFormatter();
-            	FileStream file = File.Create(dataFilePath);
+            	FileStream file = File.Create(dataFile);
             	var json = JsonUtility.ToJson(data);
             	bf.Serialize(file, json);
             	file.Close();
             }
         }
-        private bool hasData() {
+        public bool hasData() {
             if (data != null) {
                 return (true);
             }
@@ -192,52 +183,192 @@ namespace _halftheory {
             }
             return (false);
         }
+		public bool hasDataFolder() {
+			if (!string.IsNullOrEmpty(dataFile)) {
+				return (true);
+			}
+            bool test = MainSettingsVars.hasDataFolder();
+            if (!test) {
+                return (false);
+            }
+            dataFile = MainSettingsVars.dataFolder+"/"+this.gameObject.name+dataFileSuffix;
+            animationFile = MainSettingsVars.dataFolder+"/"+this.gameObject.name+animationFileSuffix;
+            pointsFile = MainSettingsVars.dataFolder+"/"+this.gameObject.name+pointsFileSuffix;
+            return (true);
+		}
+        public bool hasDataFile() {
+            bool test = hasDataFolder();
+            if (!test) {
+                return (false);
+            }
+            if (File.Exists(dataFile)) {
+	            return (true);
+            }
+            return (false);
+        }
+        public bool hasAnimationFile() {
+            bool test = hasDataFolder();
+            if (!test) {
+                return (false);
+            }
+            if (File.Exists(animationFile)) {
+	            return (true);
+            }
+            return (false);
+        }
+        public bool hasPointsFile() {
+            bool test = hasDataFolder();
+            if (!test) {
+                return (false);
+            }
+            if (File.Exists(pointsFile)) {
+	            return (true);
+            }
+            return (false);
+        }
+        public void deleteFiles() {
+        	bool test = hasDataFile();
+        	if (test) {
+        		File.Delete(dataFile);
+        		#if UNITY_EDITOR
+        		File.Delete(dataFile+".meta");
+        		#endif
+        	}
+        	test = hasAnimationFile();
+        	if (test) {
+        		File.Delete(animationFile);
+        		#if UNITY_EDITOR
+        		File.Delete(animationFile+".meta");
+        		#endif
+        	}
+        	test = hasPointsFile();
+        	if (test) {
+        		File.Delete(pointsFile);
+        		#if UNITY_EDITOR
+        		File.Delete(pointsFile+".meta");
+        		#endif
+        	}
+        }
 
-        void loadMeshData() {
-        	if (data.meshData.Count == 0) {
-        		return;
-        	}
-			foreach (var d in data.meshData) {
-				GameObject newMesh = new GameObject("newMesh", typeof(OSC_Mesh));
-				newMesh.transform.parent = transform;
-				JsonUtility.FromJsonOverwrite((string)d, newMesh.GetComponent<OSC_Mesh>().data);
-				if (string.IsNullOrEmpty(newMesh.GetComponent<OSC_Mesh>().data.objectName)) {
-					Destroy(newMesh);
-				}
-				else {
-					newMesh.name = newMesh.GetComponent<OSC_Mesh>().data.objectName;
-					newMesh.GetComponent<OSC_Mesh>().loadData();
-				}
-			}
-        }
-        void saveMeshData() {
-			data.meshData = new List<string>();
-			if (transform.childCount == 0) {
-        		return;
-        	}
-			foreach (Transform child in transform) {
-				child.gameObject.GetComponent<OSC_Mesh>().saveData();
-				//child.gameObject.GetComponent<OSC_Mesh>().data.objectName = child.name;
-				var json = JsonUtility.ToJson(child.gameObject.GetComponent<OSC_Mesh>().data);
-				data.meshData.Add(json);
-			}
-        }
-        public void deleteMeshData() {
-			data.meshData = new List<string>();
-			if (transform.childCount == 0) {
-        		return;
-        	}
-			foreach (Transform child in transform) {
-				Destroy(child.gameObject);
-			}
-        }
+        // Mesh Data
 
-		void SettingsFPS() {
-			if (Application.targetFrameRate != data.fps) {
-				Application.targetFrameRate = data.fps;
+        [HideInInspector] public OSC_Mesh[] meshComponents = new OSC_Mesh[MainSettingsVars.groupsLength];
+		private Dictionary<int, int> meshPeaks = new Dictionary<int, int>();
+
+		public void meshPeaksAdd(int group, int peaks) {
+			if (meshPeaks.ContainsKey(group)) {
+				meshPeaks[group] = peaks;
+			}
+			else {
+				meshPeaks.Add(group, peaks);
 			}
 		}
-		void SettingsCamera() {
+        void loadMeshData() {
+        	if (transform.childCount == MainSettingsVars.groupsLength) {
+        		return;
+        	}
+        	GameObject newObj;
+			for (int i=0; i < MainSettingsVars.groupsLength; i++) {
+				string objName = "group"+i;
+                Transform testTransform = transform.Find(objName);
+                if (testTransform) {
+                    DestroyImmediate(testTransform.gameObject);
+                }
+                newObj = new GameObject(objName, typeof(OSC_Mesh));
+                meshComponents[i] = newObj.GetComponent<OSC_Mesh>();
+        		if (data.meshData.Count > i) {
+					JsonUtility.FromJsonOverwrite((string)data.meshData[i], meshComponents[i].data);
+					meshComponents[i].loadData();
+				}
+                newObj.transform.parent = transform;
+                meshPeaksAdd(i, meshComponents[i].data.peaks);
+        	}
+        }
+        void saveMeshData() {
+			data.meshData.Clear();
+			if (transform.childCount == 0) {
+        		return;
+        	}
+        	for (int i=0; i < meshComponents.Length; i++) {
+        		meshComponents[i].saveData();
+				var json = JsonUtility.ToJson(meshComponents[i].data);
+				data.meshData.Add(json);
+        	}
+        }
+
+        // Animation Data
+
+        // Points Data
+
+        // Operation
+
+        void stopAndSave() {
+        	// stop
+        	active = false;
+        	// save
+        	if (initialized) {
+        		saveData();
+        	}
+        }
+
+		IEnumerator Initialize() {
+			if (initialized) {
+				yield break;
+			}
+			while(!MainSettingsVars.initialized) {
+			     yield return null;
+			}
+			if (!this.enabled) {
+				yield break;
+			}
+			if (!current) {
+				yield break;
+			}
+			bool test = hasData();
+			yield return null;
+			if (!test) {
+				yield break;
+			}
+			initialized = true;
+			yield break;
+		}
+
+		void OnEnable() {
+            StartCoroutine(Initialize());
+			SettingsFPS();
+			SettingsCamera();
+		}
+		IEnumerator Start() {
+            yield return StartCoroutine(Initialize());
+			SettingsFPS();
+			SettingsCamera();
+		}
+		void LateUpdate() {
+			if (!current) {
+				return;
+			}
+			// more initializations
+			// gameMode {live, record, play, render}
+		}
+        void OnDisable() {
+			 stopAndSave();
+        }
+
+		public void SettingsFPS() {
+			if (!initialized || !data.initialized || !current) {
+				return;
+			}
+			frameTime = 1f / (float)data.fps;
+			if (MainSettingsVars.forceFPS) {
+				if (Application.targetFrameRate != data.fps) {
+					Application.targetFrameRate = data.fps;
+				}
+			}
+		}
+		public void SettingsCamera() {
+			if (!initialized || !data.initialized || !current) {
+				return;
+			}
 			// this object is 0
 			transform.position = Vector3.zero;
 			// root object is 0
@@ -260,53 +391,25 @@ namespace _halftheory {
 			}
 		}
 
-		public void collectPoints(string address, float x, float y, float z) {
+		[HideInInspector] public Dictionary<int, Vector4> points = new Dictionary<int, Vector4>();
+		private Vector4 xyz;
+		private float pointTime;
+
+		public void collectPoints(int point, float x, float y, float z) {
 			if (!initialized || !data.initialized || !current) {
 				return;
 			}
-			// start recording?
-
-			string[] parts = address.Split('/');
-
-			string meshName = parts[1];
-            if (string.IsNullOrEmpty(meshName)) {
-	            Debug.Log("HALFTHEORY: "+this.GetType()+": collectPoints failed on meshName: "+meshName);
-				return;
-            }
-
-			int meshPoint = int.Parse(parts[parts.Length - 1]);
-			if (meshPoint < 0) {
-	            Debug.Log("HALFTHEORY: "+this.GetType()+": collectPoints failed on meshPoint: "+meshPoint);
-				return;
+	        pointTime = Time.unscaledTime - activeTime;
+			xyz = new Vector4(x,y,z,pointTime);
+			if (points.ContainsKey(point)) {
+				points[point] = xyz;
 			}
-
-			// try currentMeshObject
-			if (currentMeshObject != null) {
-				if (currentMeshObject.name == meshName) {
-					currentMeshComponent.collectPoints(meshPoint, x, y, z);
-					return;
-				}
+			else {
+				points.Add(point, xyz);
 			}
-			// try existing child mesh
-			if (transform.childCount > 0) {
-				Transform testTransform = transform.Find(meshName);
-				if (testTransform) {
-					currentMeshObject = testTransform.gameObject;
-					currentMeshComponent = currentMeshObject.GetComponent<OSC_Mesh>();
-					currentMeshComponent.collectPoints(meshPoint, x, y, z);
-					return;
-				}
-			}
-			// add new child
-			GameObject newMesh = new GameObject(meshName, typeof(OSC_Mesh));
-			newMesh.transform.parent = transform;
-			if (currentMeshObject != null) {
-				newMesh.GetComponent<OSC_Mesh>().data = currentMeshComponent.data;
-			}
-			currentMeshObject = newMesh;
-			currentMeshComponent = currentMeshObject.GetComponent<OSC_Mesh>();
-			currentMeshComponent.collectPoints(meshPoint, x, y, z);
-            Debug.Log("HALFTHEORY: "+this.GetType()+": collectPoints newMesh : "+meshName);
+			// record
+            //Debug.Log("HALFTHEORY: "+this.GetType()+": collectPoints: "+point+" "+x+" "+y+" "+z);
 		}
+
 	}
 }
