@@ -10,7 +10,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>_XYZOSC_to_3DVideo_display1</string>
+	<string>_XYZOSC_to_3DVideo</string>
 	<key>CFBundleGetInfoString</key>
 	<string>Unity Player version 2018.1.1f1 (b8cbb5de9840). (c) 2018 Unity Technologies ApS. All rights reserved.</string>
 	<key>CFBundleIconFile</key>
