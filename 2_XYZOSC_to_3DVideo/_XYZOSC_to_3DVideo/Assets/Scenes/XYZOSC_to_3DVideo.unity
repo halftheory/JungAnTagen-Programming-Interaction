@@ -138,7 +138,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 8
   m_Type: 1
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -218,7 +218,7 @@ Camera:
   m_Depth: -3
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294967007
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -326,7 +326,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294967007
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -366,6 +366,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2805e3abea7b1431fbe95a27b58113e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  quitStarted: 0
 --- !u!82 &282840816
 AudioSource:
   m_ObjectHideFlags: 0
@@ -508,7 +509,7 @@ Camera:
   m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294967007
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -609,10 +610,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   current: 0
   initialized: 0
+  meshComponents:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   data: {fileID: 0}
   dataFile: 
-  animationFile: 
   pointsFile: 
+  animationFile: 
+  activeTime: 0
 --- !u!1 &1358894507
 GameObject:
   m_ObjectHideFlags: 0
@@ -653,7 +660,7 @@ Camera:
   m_Depth: -2
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294967007
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -677,6 +684,62 @@ Transform:
   m_Children: []
   m_Father: {fileID: 282840814}
   m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1680986773
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1680986775}
+  - component: {fileID: 1680986774}
+  m_Layer: 5
+  m_Name: GUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1680986774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1680986773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d7fe2dc28a8d4543a37d32376887196, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guiSaving: 0
+  guiGridGameMode: []
+  guiGridCodec: []
+  guiGridAnimations: []
+  guiGridMeshTopology: []
+  guiGridMeshColor: []
+  guiGridMeshShader: []
+  guiGridDataArr:
+  - Copy Runtime Data to Editor
+  - Copy Editor Data to Runtime
+  guiGridMeshTopologyInt: 00000000000000000000000000000000
+  guiGridMeshTopologyIntNew: 00000000000000000000000000000000
+  guiGridMeshColorInt: 00000000000000000000000000000000
+  guiGridMeshColorIntNew: 00000000000000000000000000000000
+  guiGridMeshShaderInt: 00000000000000000000000000000000
+  guiGridMeshShaderIntNew: 00000000000000000000000000000000
+--- !u!4 &1680986775
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1680986773}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1791738180
 GameObject:
@@ -707,7 +770,7 @@ Transform:
   m_Children:
   - {fileID: 890535865}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1791738182
 MonoBehaviour:
@@ -774,7 +837,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294967007
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

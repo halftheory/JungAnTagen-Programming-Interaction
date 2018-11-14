@@ -88,7 +88,7 @@ namespace _halftheory {
 	    		material = new Material(Shader.Find("Transparent/Diffuse"));
 	    		material.color = currentColor;
 	    		GetComponent<MeshRenderer>().material = material;
-	    		startTime = Time.unscaledTime;
+	    		startTime = MainSettingsVars.time;
     		}
     		else {
                 Destroy(gameObject);
@@ -124,7 +124,7 @@ namespace _halftheory {
 					Destroy(gameObject);
 	                return;
 				}
-				t = (Time.unscaledTime - startTime) / traceTime;
+				t = (MainSettingsVars.time - startTime) / traceTime;
 				currentAlpha = Mathf.SmoothStep(initialAlpha, 0.0f, t);
 		        currentColor.a = currentAlpha;
 	        	material.color = currentColor;
@@ -134,6 +134,12 @@ namespace _halftheory {
                 Destroy(gameObject);
                 return;
     		}
+		}
+
+		void OnDestroy() {
+			if (parentMesh != null) {
+				parentMesh.echoObjArrRemove(meshEcho, this.gameObject.name);
+			}
 		}
 	}
 }

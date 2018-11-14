@@ -1,6 +1,6 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
 using System.Collections;
+using UnityEngine;
 
 namespace _halftheory {
     [RequireComponent(typeof(OSC))]
@@ -23,7 +23,10 @@ namespace _halftheory {
 		int group = 0;
 
 		void messageHandler(OscMessage message) {
-			if (MainSettingsVars.currentAnimationObject == null) {
+			if (MainSettingsVars.currentAnimationComponent == null) {
+				return;
+			}
+			if (MainSettingsVars.data.currentGameMode != gameMode.live && MainSettingsVars.data.currentGameMode != gameMode.record_points) {
 				return;
 			}
 			if (message.address.IndexOf("/point/") == 0 && message.values.Count == 3) {

@@ -385,6 +385,9 @@ public class OSC : MonoBehaviour {
             OscPacketIO = null;
 			print("Closed OSC listener");
         }
+        if (useRepeater) {
+            CancelInvoke("UpdateRepeater");
+		}
     }
 
 	/// <summary>
