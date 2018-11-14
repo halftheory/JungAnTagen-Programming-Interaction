@@ -1,7 +1,9 @@
 /* adapted from s3dCameraSBS.js in http://projects.ict.usc.edu/mxr/diy/mxr-unity-package/ */
 using UnityEngine;
-using UnityEditor;
 using System.Collections;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace _halftheory {
 	[ExecuteInEditMode]

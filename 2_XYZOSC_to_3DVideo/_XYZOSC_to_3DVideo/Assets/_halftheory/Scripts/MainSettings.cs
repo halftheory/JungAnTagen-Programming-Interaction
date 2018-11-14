@@ -1,23 +1,32 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
+using UnityEngine;
 
 namespace _halftheory {
 
-    public enum gameMode {live, record, play, render}
+    public enum gameMode {live, record_points, record_animation, play, render}
 
     public class MainSettingsData : ScriptableObject {
 
         // global
-        public bool guiActive = true;
-        public int maxSizeCollections = 10000; // range 2000-?
-        public int maxSizeChildren = 1000;  // range 100-?
+        public bool _gui_enabled = MainSettingsVars.defaults["gui_enabled"]; 
+        public bool gui_enabled {
+            get { return _gui_enabled; }
+            set { _gui_enabled = value;
+                if (value && MainSettingsVars.guiComponent != null) {
+                    MainSettingsVars.guiComponent.setRenderCamerasResolution();
+                }
+            }
+        }
+        public int maxSizeCollections = MainSettingsVars.defaults["maxSizeCollections"];
+        public int maxSizeChildren = MainSettingsVars.defaults["maxSizeChildren"];
 
         // stereo3d
-        public bool _stereo3d_enabled = false;
+        public bool _stereo3d_enabled = MainSettingsVars.defaults["stereo3d_enabled"];
         public bool stereo3d_enabled {
             get { return _stereo3d_enabled; }
             set { _stereo3d_enabled = value;
@@ -26,7 +35,7 @@ namespace _halftheory {
                 }
             }
         }
-        public float _stereo3d_interaxial = 65f;
+        public float _stereo3d_interaxial = MainSettingsVars.defaults["stereo3d_interaxial"];
         public float stereo3d_interaxial {
             get { return _stereo3d_interaxial; }
             set { _stereo3d_interaxial = value;
@@ -35,7 +44,7 @@ namespace _halftheory {
                 }
             }
         }
-        public float _stereo3d_zeroPrlxDist = 2f;
+        public float _stereo3d_zeroPrlxDist = MainSettingsVars.defaults["stereo3d_zeroPrlxDist"];
         public float stereo3d_zeroPrlxDist {
             get { return _stereo3d_zeroPrlxDist; }
             set { _stereo3d_zeroPrlxDist = value;
@@ -44,7 +53,7 @@ namespace _halftheory {
                 }
             }
         }
-        public float _stereo3d_H_I_T = 0;
+        public float _stereo3d_H_I_T = MainSettingsVars.defaults["stereo3d_H_I_T"];
         public float stereo3d_H_I_T {
             get { return _stereo3d_H_I_T; }
             set { _stereo3d_H_I_T = value;
@@ -54,7 +63,7 @@ namespace _halftheory {
             }
         }
         // osc
-        public int _osc_inPort = 8888;
+        public int _osc_inPort = MainSettingsVars.defaults["osc_inPort"];
         public int osc_inPort {
             get { return _osc_inPort; }
             set { _osc_inPort = value;
@@ -63,8 +72,8 @@ namespace _halftheory {
                 }
             }
         }
-        public string osc_outIP = "127.0.0.1";
-        public int osc_outPort = 9999;
+        public string osc_outIP = MainSettingsVars.defaults["osc_outIP"];
+        public int osc_outPort = MainSettingsVars.defaults["osc_outPort"];
         //mouselook
         public bool _mouselook_enabled = false;
         public bool mouselook_enabled {
@@ -75,24 +84,70 @@ namespace _halftheory {
                 }
             }
         }
+        // gameMode
+        public gameMode _currentGameMode = MainSettingsVars.defaults["currentGameMode"];
+        public gameMode currentGameMode {
+            get { return _currentGameMode; }
+            set {
+                if (_currentGameMode != value && MainSettingsVars.currentAnimationComponent != null) {
+                    MainSettingsVars.currentAnimationComponent.active = false;
+                }
+                _currentGameMode = value;
+            }
+        }
         // animations
-        public gameMode currentGameMode = gameMode.live;
         public string[] animations;
         public string _currentAnimation;
         public string currentAnimation {
             get { return _currentAnimation; }
             set {
-                bool test = MainSettingsVars.loadAnimationObject(value);
+                bool test = MainSettingsVars.loadCurrentAnimation(value);
                 if (test) {
                     _currentAnimation = value;
                 }
             }
         }
+        // render
+        public int renderAntiAliasing = 1;
+        public string renderCodec = MainSettingsVars.defaults["renderCodec"];
+        public bool[] renderCamerasActive = new bool[MainSettingsVars.renderCamerasNames.Count];
+        public Vector2[] renderCamerasResolution = new Vector2[MainSettingsVars.renderCamerasNames.Count];
     }
 
     public static class MainSettingsVars {
 
         public static bool initialized = false;
+
+        /* DEFAULTS */
+        public static Dictionary<string, dynamic> defaults = new Dictionary<string, dynamic>(){
+            {"gui_enabled",(bool)true},
+            {"maxSizeCollections",(int)10000}, // range 2000-20000
+            {"maxSizeChildren",(int)1000}, // range 100-5000
+            {"stereo3d_enabled",(bool)false},
+            {"stereo3d_interaxial",(float)65f},
+            {"stereo3d_zeroPrlxDist",(float)2f},
+            {"stereo3d_H_I_T",(float)0.0f},
+            {"osc_inPort",(int)8888},
+            {"osc_outIP",(string)"127.0.0.1"},
+            {"osc_outPort",(int)9999},
+            {"currentGameMode",(gameMode)gameMode.live},
+            {"renderCodec",(string)"Animation"},
+            {"fps",(int)60},
+            {"meshActive",(bool)false},
+            {"meshPeaks",(int)0},
+            {"meshLevel",(float)1.0f},
+            {"meshTopology",(meshTopology)meshTopology.LineStrip},
+            {"meshColor",(meshColor)meshColor.white},
+            {"meshShader",(meshShader)meshShader.Color},
+            {"meshAlpha",(float)1.0f},
+            {"meshRandomX",(bool)false},
+            {"meshRandomY",(bool)false},
+            {"meshRotateSpeed",(float)0.0f},
+            {"meshSmoothTime",(float)0.0f},
+            {"meshClearTime",(float)0.0f},
+            {"meshNoClearTime",(bool)false},
+            {"meshTraceTime",(float)0.0f}
+        };
 
         /* DATA */
         public static MainSettingsData data;
@@ -106,10 +161,12 @@ namespace _halftheory {
         }
         public static string dataFileSuffix = "MainSettingsData.json";
         public static string dataFile;
+        public static string rootFolder; // contains trailing slash
         public static string recordFolderSuffix = "record";
         public static string recordFolder;
 
         /* OBJECTS + COMPONENTS */
+        public static MainSettings mainsettingsComponent;
         // light
         public static GameObject lightObject;
         public static Light lightComponent;
@@ -117,15 +174,21 @@ namespace _halftheory {
         public static MouseLook mouselookComponent;
         // audiosource
         public static AudioSource audiosourceComponent;
+        public static string currentAudioFile;
         // camera
-        public static GameObject mainCamObject;
-        public static Camera mainCamComponent;
+        public static GameObject maincameraObject;
+        public static Camera maincameraComponent;
         // stereo3d
         public static stereo3dCameraSBS stereo3dComponent;
         // osc
         public static GameObject oscObject;
         public static OSC oscComponent;
+        // gui
+        public static GUISettings guiComponent;
+        // animations
         // get these after main data is loaded
+        public static GameObject[] animationObjects;
+        public static OSC_Animation[] animationComponents;
         public static GameObject currentAnimationObject;
         public static OSC_Animation currentAnimationComponent;
 
@@ -133,10 +196,55 @@ namespace _halftheory {
         public static bool forceFPS = false;
         public static int groupsLength = 4;
         public static int pointsLength = 200;
-        public static float pointsTime = 0.05f; // time in seconds each point stays on screen
-        public static float repeatInterval = 1f / 60f;
+        public static float pointsTime = 0.1f; // time in seconds each point stays on screen - about 3 frames @ 24fps
+        public static float repeatInterval = 1f / (float)defaults["fps"];
         public static string defaultAnimatorController = "AnimatorController";
         public static string defaultAnimationClip = "AnimationClip";
+        public static float time {
+            get {
+                if (currentAnimationRender) {
+                    return Time.time;
+                }
+                else {
+                    return Time.unscaledTime;
+                }
+            }
+        }
+        // render
+        public static bool currentAnimationRender {
+            get {
+                if (currentAnimationComponent == null) {
+                    return (false);
+                }
+                if (data.currentGameMode == gameMode.render && currentAnimationComponent.active) {
+                    return (true);
+                }
+                return (false);
+            }
+        }
+        public static Dictionary<int,string> renderAntiAliasing = new Dictionary<int,string>(){
+            {1, "x 1"},
+            {2, "x 2"},
+            {4, "x 4"}
+        };
+        public static Dictionary<string,string> renderCodecs = new Dictionary<string,string>(){
+            {"Animation", "qtrle"},
+            {"ProRes4444", "prores_ks -pix_fmt yuva444p10le"}
+        };
+        public static Dictionary<string,Vector2> renderResolutions = new Dictionary<string,Vector2>(){
+            {"HD", new Vector2(1920.0f,1080.0f)},
+            {"DCI 2K", new Vector2(2048.0f,1080.0f)},
+            {"4K UHD", new Vector2(3840.0f,2160.0f)},
+            {"DCI 4K", new Vector2(4096.0f,2160.0f)}
+        };
+        public static Dictionary<int,string> renderCamerasNames = new Dictionary<int,string>(){
+            {0, "Single"},
+            {1, "Side-By-Side Half"},
+            {2, "Side-By-Side Full"}
+        };
+        public static Dictionary<int,Camera[]> renderCamerasComponents = new Dictionary<int,Camera[]>();
+
+        private static float saveTime = 0.0f;
 
         public static bool loadData() {
             data = ScriptableObject.CreateInstance<MainSettingsData>();
@@ -163,31 +271,29 @@ namespace _halftheory {
                     oscComponent.inPort = data.osc_inPort;
                     oscComponent.outIP = data.osc_outIP;
                     oscComponent.outPort = data.osc_outPort;
-                    // children
-                    if (data.animations != null && data.animations.Length > 0) {
-                        Array.Sort(data.animations);
-                        GameObject newObj;
-                        for (int i = 0; i < data.animations.Length; i++) {
-                            Transform testTransform = oscObject.transform.Find(data.animations[i]);
-                            if (testTransform && testTransform.GetComponent<OSC_Animation>()) {
-                                continue;
-                            }
-                            newObj = new GameObject(data.animations[i], typeof(OSC_Animation));
-                            newObj.GetComponent<OSC_Animation>().current = false;
-                            newObj.GetComponent<Animation>().playAutomatically = false;
-                            newObj.SetActive(false);
-                            newObj.transform.parent = oscObject.transform;
-                        }
-                    }
+                    loadAnimations();
                 }
                 if (mouselookComponent != null) {
                     mouselookComponent.enabled = data.mouselook_enabled;
                 }
+                saveTime = Time.realtimeSinceStartup;
                 return (true);
             }
             return (false);
         }
         public static void saveData() {
+            // ondisable
+            if (Time.frameCount == 0) {
+                if (mainsettingsComponent.quitStarted) {
+                    return;
+                }
+            }            
+            // normal
+            else {
+                if (saveTime > Time.realtimeSinceStartup - 3.0f) {
+                    return;
+                }
+            }
             if (data == null) {
                 return;
             }
@@ -203,7 +309,7 @@ namespace _halftheory {
                 data.osc_outIP = oscComponent.outIP;
                 data.osc_outPort = oscComponent.outPort;
                 // children
-                reloadAnimations();
+                loadAnimations();
             }
             if (mouselookComponent != null) {
                 data.mouselook_enabled = mouselookComponent.enabled;
@@ -216,6 +322,7 @@ namespace _halftheory {
                 bf.Serialize(file, json);
                 file.Close();
             }
+            saveTime = Time.realtimeSinceStartup;
         }
         public static bool hasData() {
             if (data != null) {
@@ -261,42 +368,141 @@ namespace _halftheory {
             }
             return (false);
         }
+        public static bool hasRootFolder() {
+            if (!string.IsNullOrEmpty(rootFolder)) {
+                return (true);
+            }
+            string splitter = "/2_XYZOSC_to_3DVideo/";
+            if (Application.dataPath.IndexOf(splitter) == -1) {
+                return (false);
+            }
+            string[] parts = Regex.Split(Application.dataPath, splitter);
+            rootFolder = parts[0]+splitter;
+            return (true);
+        }
         public static bool hasRecordFolder() {
             if (!string.IsNullOrEmpty(recordFolder)) {
                 return (true);
             }
-            string rootFolder = "/2_XYZOSC_to_3DVideo/";
-            if (Application.dataPath.IndexOf(rootFolder) == -1) {
+            bool test = hasRootFolder();
+            if (!test) {
                 return (false);
             }
-            string[] parts = Regex.Split(Application.dataPath, rootFolder);
-            if (Directory.Exists(parts[0]+rootFolder+recordFolderSuffix)) {
-                recordFolder = parts[0]+rootFolder+recordFolderSuffix;
+            if (Directory.Exists(rootFolder+recordFolderSuffix)) {
+                recordFolder = rootFolder+recordFolderSuffix;
                 return (true);
             }
-            Directory.CreateDirectory(parts[0]+rootFolder+recordFolderSuffix);
-            if (Directory.Exists(parts[0]+rootFolder+recordFolderSuffix)) {
-                recordFolder = parts[0]+rootFolder+recordFolderSuffix;
+            Directory.CreateDirectory(rootFolder+recordFolderSuffix);
+            if (Directory.Exists(rootFolder+recordFolderSuffix)) {
+                recordFolder = rootFolder+recordFolderSuffix;
                 return (true);
             }
             return (false);
         }
+        public static void dataActions(int action) {
+            bool test = hasDataFolder();
+            if (!test) {
+                return;
+            }
+            test = hasRootFolder();
+            if (!test) {
+                return;
+            }
+            if (currentAnimationComponent != null) {
+                currentAnimationComponent.stopAndSave();
+            }
+            #if UNITY_EDITOR
+                string editorDir = dataFolder;
+                string runtimeDir = rootFolder+"build/_XYZOSC_to_3DVideo.app/Contents/"+dataFolderSuffix;
+            #else
+                string runtimeDir = dataFolder;
+                string editorDir = rootFolder+"_XYZOSC_to_3DVideo/Assets/"+dataFolderSuffix;
+            #endif
+            switch (action) {
+                // "Copy Runtime Data to Editor",
+                case 0:
+                    DirectoryCopy(runtimeDir, editorDir);
+                    break;
+                // "Copy Editor Data to Runtime"
+                case 1:
+                    DirectoryCopy(editorDir, runtimeDir);
+                    break;
+            }
+        }
+        private static void DirectoryCopy(string sourceDir, string destDir) {
+            DirectoryInfo dir = new DirectoryInfo(sourceDir);
+            if (!dir.Exists) {
+                return;
+            }
+            if (!Directory.Exists(destDir)) {
+                Directory.CreateDirectory(destDir);
+            }
+            FileInfo[] files = dir.GetFiles();
+            foreach (FileInfo file in files) {
+                if (file.Name.IndexOf(".meta") > 0) {
+                    continue;
+                }
+                string tempPath = Path.Combine(destDir, file.Name);
+                file.CopyTo(tempPath, true);
+            }
+        }
 
-        public static bool loadAnimationObject(string objectName) {
+        public static void loadAnimations() {
+            if (oscObject == null) {
+                return;
+            }
+            // use array
+            if (data.animations != null && data.animations.Length > 0) {
+                // destroy children not in the array
+                if (oscObject.transform.childCount > 0) {
+                    int test = -1;
+                    foreach (Transform child in oscObject.transform) {
+                        test = Array.IndexOf(data.animations, child.name);
+                        if (test == -1) {
+                            child.GetComponent<OSC_Animation>().deleteFiles();
+                            UnityEngine.Object.Destroy(child.gameObject);
+                        }
+                    }
+                }
+                Array.Sort(data.animations);
+                animationObjects = new GameObject[data.animations.Length];
+                animationComponents = new OSC_Animation[data.animations.Length];
+                GameObject newObj;
+                for (int i=0; i < data.animations.Length; i++) {
+                    Transform testTransform = oscObject.transform.Find(data.animations[i]);
+                    // exists
+                    if (testTransform != null) {
+                        animationObjects[i] = testTransform.gameObject;
+                        animationComponents[i] = testTransform.GetComponent<OSC_Animation>();
+                        continue;
+                    }
+                    // new
+                    newObj = new GameObject(data.animations[i], typeof(OSC_Animation));
+                    newObj.GetComponent<Animation>().playAutomatically = false;
+                    newObj.transform.parent = oscObject.transform;
+                    newObj.SetActive(false);
+                    animationObjects[i] = newObj;
+                    animationComponents[i] = newObj.GetComponent<OSC_Animation>();
+                }
+            }
+            else {
+                // destroy unwanted children
+                if (oscObject.transform.childCount > 0) {
+                    foreach (Transform child in oscObject.transform) {
+                        child.GetComponent<OSC_Animation>().deleteFiles();
+                        UnityEngine.Object.Destroy(child.gameObject);
+                    }
+                }
+                data.animations = new string[0];
+                data.currentAnimation = "";
+                animationObjects = null;
+                animationComponents = null;
+            }
+        }
+        public static bool loadCurrentAnimation(string objectName) {
             if (oscObject == null) {
                 return (false);
             }
-            // same
-            if (currentAnimationObject != null && currentAnimationObject.name == objectName && currentAnimationObject.activeSelf && currentAnimationComponent.current) {
-                 return (true);
-            }
-            // better stop everything
-            /*
-            if (currentAnimationComponent != null) {
-                Debug.Log("stopAndSave loadAnimationObject");
-                currentAnimationComponent.stopAndSave();
-            }
-            */
             // empty
             if (string.IsNullOrEmpty(objectName)) {
                 foreach (Transform child in oscObject.transform) {
@@ -310,53 +516,28 @@ namespace _halftheory {
             // try saved name
             if (oscObject.transform.childCount > 0) {
                 Transform testTransform = oscObject.transform.Find(objectName);
-                if (testTransform && testTransform.GetComponent<OSC_Animation>()) {
+                if (testTransform != null) {
                     foreach (Transform child in oscObject.transform) {
                         if (child.name == objectName) {
                             child.GetComponent<OSC_Animation>().current = true;
                             child.gameObject.SetActive(true);
+                            if (child.GetComponent<OSC_Animation>().initialized) {
+                                currentAnimationObject = child.gameObject;
+                                currentAnimationComponent = child.GetComponent<OSC_Animation>();
+                            }
+                            else {
+                                loadCurrentAnimation("");
+                                return (false);
+                            }
                             continue;
                         }
                         child.GetComponent<OSC_Animation>().current = false;
                         child.gameObject.SetActive(false);
                     }
-                    currentAnimationObject = testTransform.gameObject;
-                    currentAnimationComponent = currentAnimationObject.GetComponent<OSC_Animation>();
                     return (true);
                 }
             }
-            // new
-            currentAnimationObject = new GameObject(objectName, typeof(OSC_Animation));
-            currentAnimationObject.transform.parent = oscObject.transform;
-            currentAnimationComponent = currentAnimationObject.GetComponent<OSC_Animation>();
-            currentAnimationObject.GetComponent<Animation>().playAutomatically = false;
-            foreach (Transform child in oscObject.transform) {
-                if (child.name == objectName) {
-                    child.GetComponent<OSC_Animation>().current = true;
-                    child.gameObject.SetActive(true);
-                    continue;
-                }
-                child.GetComponent<OSC_Animation>().current = false;
-                child.gameObject.SetActive(false);
-            }
-            reloadAnimations();
-            return (true);
-        }
-        public static IEnumerator deleteAnimationObject(string objectName) {
-            // delete current
-            if (currentAnimationObject != null && currentAnimationObject.name == objectName) {
-                data.currentAnimation = "";
-            }
-            foreach (Transform child in oscObject.transform) {
-                if (child.name == objectName) {
-                    child.GetComponent<OSC_Animation>().deleteFiles();
-                    UnityEngine.Object.Destroy(child.gameObject);
-                    break;
-                }
-            }
-            yield return new WaitForEndOfFrame();
-            reloadAnimations();
-            yield break;
+            return (false);
         }
         public static bool hasAnimationObject() {
             if (currentAnimationObject != null) {
@@ -365,25 +546,11 @@ namespace _halftheory {
             if (string.IsNullOrEmpty(data.currentAnimation)) {
                 return (false);
             }
-            bool test = loadAnimationObject(data.currentAnimation);
+            bool test = loadCurrentAnimation(data.currentAnimation);
             if (test) {
                 return (true);
             }
             return (false);
-        }
-        public static void reloadAnimations() {
-            if (oscObject == null) {
-                return;
-            }
-            data.animations = new string[oscObject.transform.childCount];
-            if (oscObject.transform.childCount > 0) {
-                int i = 0;
-                foreach (Transform child in oscObject.transform) {
-                    data.animations[i] = child.name;
-                    i++;
-                }
-                Array.Sort(data.animations);
-            }
         }
         public static string getAnimationName() {
             string objectName = DateTime.Now.ToString("yyyyMMddHHmmss");
@@ -398,6 +565,8 @@ namespace _halftheory {
             if (MainSettingsVars.initialized) {
                 yield break;
             }
+
+            MainSettingsVars.mainsettingsComponent = this;
 
             // optional
             // light
@@ -422,10 +591,12 @@ namespace _halftheory {
             // required
             // camera
             if (GetComponent<Camera>()) {
-                MainSettingsVars.mainCamObject = this.gameObject;
-                MainSettingsVars.mainCamComponent = GetComponent<Camera>();
-                MainSettingsVars.mainCamComponent.clearFlags = CameraClearFlags.SolidColor;
-                MainSettingsVars.mainCamComponent.backgroundColor = Color.black;
+                MainSettingsVars.maincameraObject = this.gameObject;
+                MainSettingsVars.maincameraComponent = GetComponent<Camera>();
+                MainSettingsVars.maincameraComponent.clearFlags = CameraClearFlags.SolidColor;
+                MainSettingsVars.maincameraComponent.backgroundColor = Color.black;
+
+                MainSettingsVars.renderCamerasComponents.Add(0, new Camera[]{ MainSettingsVars.maincameraComponent });
             }
             else {
                 Debug.Log("HALFTHEORY: "+this.GetType()+": Camera not found");
@@ -435,6 +606,13 @@ namespace _halftheory {
             // stereo3d
             if (GetComponent<stereo3dCameraSBS>()) {
                 MainSettingsVars.stereo3dComponent = GetComponent<stereo3dCameraSBS>();
+
+                if (MainSettingsVars.stereo3dComponent.leftCam != null && MainSettingsVars.stereo3dComponent.rightCam != null) {
+                    MainSettingsVars.renderCamerasComponents.Add(1, new Camera[]{ MainSettingsVars.stereo3dComponent.leftCam.GetComponent<Camera>(), MainSettingsVars.stereo3dComponent.rightCam.GetComponent<Camera>() });
+                }
+                if (MainSettingsVars.stereo3dComponent.leftCamRecord != null && MainSettingsVars.stereo3dComponent.rightCamRecord != null) {
+                    MainSettingsVars.renderCamerasComponents.Add(2, new Camera[]{ MainSettingsVars.stereo3dComponent.leftCamRecord.GetComponent<Camera>(), MainSettingsVars.stereo3dComponent.rightCamRecord.GetComponent<Camera>() });
+                }
             }
             else {
                 Debug.Log("HALFTHEORY: "+this.GetType()+": stereo3dCameraSBS not found");
@@ -455,6 +633,17 @@ namespace _halftheory {
                 yield break;
             }
 
+            // gui
+            GUISettings guiComponent = (GUISettings)FindObjectOfType(typeof(GUISettings));
+            if (guiComponent) {
+                MainSettingsVars.guiComponent = guiComponent;
+            }
+            else {
+                Debug.Log("HALFTHEORY: "+this.GetType()+": GUISettings not found");
+            }
+
+            MainSettingsVars.initialized = true;
+
             // data
             bool test = MainSettingsVars.loadData();
             yield return null;
@@ -464,13 +653,12 @@ namespace _halftheory {
             }
 
             // get these after data is loaded
-            test = MainSettingsVars.loadAnimationObject(MainSettingsVars.data.currentAnimation);
+            test = MainSettingsVars.loadCurrentAnimation(MainSettingsVars.data.currentAnimation);
             yield return null;
             if (!test) {
-                Debug.Log("HALFTHEORY: "+this.GetType()+": loadAnimationObject failed");
+                Debug.Log("HALFTHEORY: "+this.GetType()+": loadCurrentAnimation failed");
             }
 
-            MainSettingsVars.initialized = true;
             yield break;
         }
 
@@ -486,115 +674,39 @@ namespace _halftheory {
             MainSettingsVars.saveData();
         }
         void LateUpdate() {
-            if (MainSettingsVars.initialized && Input.GetKeyDown(KeyCode.Escape)) {
-                MainSettingsVars.data.guiActive = !MainSettingsVars.data.guiActive;
-                MainSettingsVars.data.mouselook_enabled = !MainSettingsVars.data.guiActive;
-            }
-        }
-
-        // GUI
-        #if UNITY_EDITOR
-        private Rect guiWindowRect = new Rect(100, 100, Screen.width - 200, 200);
-        private GUIStyle guiStyleButton;
-        private bool guiToggle3d, guiToggleOsc = false;
-
-        private bool guiLabel(bool myBool, string label, string current = "") {
-            if (myBool) {
-                label = label+" -";
-            }
-            else {
-                label = label+" +";
-            }
-            if (string.IsNullOrEmpty(current)) {
-                myBool = GUILayout.Toggle(myBool, label, guiStyleButton);
-            }
-            else {
-                GUILayout.BeginHorizontal();
-                myBool = GUILayout.Toggle(myBool, label, guiStyleButton);
-                GUILayout.Label(current, GUILayout.Width(100));
-                GUILayout.EndHorizontal();
-            }
-            return myBool;
-        }
-        private dynamic guiField(dynamic value, string label, dynamic valueDefault = null, dynamic min = null, dynamic max = null) {
-            GUILayout.BeginVertical("box");
-            if (value.GetType() == typeof(bool)) {
-                value = GUILayout.Toggle(value, label, "button");
-            }
-            else if (value.GetType() == typeof(int)) {
-                if (valueDefault == null) {
-                    valueDefault = 0;
-                }
-                if (min == null) {
-                    min = 0;
-                }
-                if (max == null) {
-                    max = 100;
-                }
-                GUILayout.BeginHorizontal();
-                GUILayout.Label(label+" (default "+valueDefault.ToString()+")");
-                string valueString = GUILayout.TextField(value.ToString(), 10, GUILayout.Width(50));
-                value = int.Parse(valueString);
-                if (GUILayout.Button("reset", GUILayout.Width(50))) {
-                    value = valueDefault;
-                }
-                GUILayout.EndHorizontal();
-                value = GUILayout.HorizontalSlider((float)value, (float)min, (float)max);
-                value = (int)value;
-            }
-            else if (value.GetType() == typeof(float)) {
-                if (valueDefault == null) {
-                    valueDefault = 0f;
-                }
-                if (min == null) {
-                    min = 0f;
-                }
-                if (max == null) {
-                    max = 1f;
-                }
-                GUILayout.BeginHorizontal();
-                GUILayout.Label(label+" (default "+valueDefault.ToString()+")");
-                string valueString = GUILayout.TextField(value.ToString(), 10, GUILayout.Width(50));
-                value = float.Parse(valueString);
-                if (GUILayout.Button("reset", GUILayout.Width(50))) {
-                    value = valueDefault;
-                }
-                GUILayout.EndHorizontal();
-                value = GUILayout.HorizontalSlider(value, min, max);
-            }
-            GUILayout.EndVertical();
-            return value;
-        }
-        void OnGUI() {
             if (!MainSettingsVars.initialized) {
                 return;
             }
-            if (!MainSettingsVars.data.guiActive) {
-                return;
+            if (Input.GetKeyDown(KeyCode.Escape)) {
+                MainSettingsVars.data.gui_enabled = !MainSettingsVars.data.gui_enabled;
+                MainSettingsVars.data.mouselook_enabled = !MainSettingsVars.data.gui_enabled;
             }
-            GUI.backgroundColor = Color.white;
-            if (guiStyleButton == null) {
-                guiStyleButton = GUI.skin.GetStyle("button");
-                guiStyleButton.alignment = TextAnchor.MiddleLeft;
-            }
-            guiWindowRect = GUILayout.Window(0, guiWindowRect, guiWindowFunc, "MENU", GUILayout.MaxWidth(1080));
-        }
-        void guiWindowFunc(int id = 0) {
-            // 3D Settings
-            guiToggle3d = guiLabel(guiToggle3d, "3D Settings");
-            if (guiToggle3d) {
-                MainSettingsVars.data.stereo3d_enabled = guiField(MainSettingsVars.data.stereo3d_enabled, "Enable Side-By-Side");
-                MainSettingsVars.data.stereo3d_interaxial = guiField(MainSettingsVars.data.stereo3d_interaxial, "Interaxial (mm) - Distance (in millimeters) between cameras.", 65f, 0, 1000f);
-                MainSettingsVars.data.stereo3d_zeroPrlxDist = guiField(MainSettingsVars.data.stereo3d_zeroPrlxDist, "Zero Prlx Dist (M) - Distance (in meters) at which left and right images converge.", 2f, 0.1f, 100f);
-                MainSettingsVars.data.stereo3d_H_I_T = guiField(MainSettingsVars.data.stereo3d_H_I_T, "H I T - Horizontal Image Transform.", 0f, -25f, 25f);
-            }
-            // OSC Settings
-            guiToggleOsc = guiLabel(guiToggleOsc, "OSC Settings");
-            if (guiToggleOsc) {
-                MainSettingsVars.data.osc_inPort = guiField(MainSettingsVars.data.osc_inPort, "Incoming Port.", 8888, 1000, 10000);
+            if (Input.GetKeyDown(KeyCode.Space) && MainSettingsVars.currentAnimationComponent != null) {
+                MainSettingsVars.currentAnimationComponent.active = !MainSettingsVars.currentAnimationComponent.active;
             }
         }
-        #endif
-    }
 
+        public bool quitStarted = false;
+
+        public IEnumerator Quit() {
+            quitStarted = true;
+            yield return new WaitForEndOfFrame();
+            if (MainSettingsVars.initialized && MainSettingsVars.animationComponents != null) {
+                if (MainSettingsVars.animationComponents.Length > 0) {
+                    for (int i=0; i < MainSettingsVars.animationComponents.Length; i++) {
+                        MainSettingsVars.animationComponents[i].stopAndSave();
+                        yield return null;
+                    }
+                }
+            }
+            MainSettingsVars.saveData();
+            yield return null;
+            #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+            #else
+            Application.Quit();
+            #endif
+            yield break;
+        }
+    }
 }

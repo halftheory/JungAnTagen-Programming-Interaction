@@ -23,7 +23,7 @@ namespace _halftheory {
         private Vector3 localEulerAngles = Vector3.zero;
         private Vector3 localPosition = Vector3.zero;
 
-        void Start () {
+        void Start() {
             // Make the rigid body not change rotation
             if (GetComponent<Rigidbody>()) {
                 GetComponent<Rigidbody>().freezeRotation = true;
@@ -33,7 +33,7 @@ namespace _halftheory {
             localPosition = transform.localPosition;
         }
 
-        void Update () {
+        void LateUpdate() {
             //Zoom in and out with Mouse Wheel
             transform.Translate(0, 0, Input.GetAxis("Mouse ScrollWheel") * zoomSpeed, Space.Self);
 
@@ -56,6 +56,12 @@ namespace _halftheory {
             }
             // reset with right mouse
             else if (Input.GetMouseButton(1)) {
+                if (MainSettingsVars.currentAnimationComponent != null) {
+                    if (MainSettingsVars.currentAnimationComponent.initialized && MainSettingsVars.currentAnimationComponent.data.initialized && MainSettingsVars.currentAnimationComponent.current) {
+                        MainSettingsVars.currentAnimationComponent.setCamera();
+                        return;
+                    }
+                }
                 transform.localEulerAngles = localEulerAngles;
                 transform.localPosition = localPosition;
             }

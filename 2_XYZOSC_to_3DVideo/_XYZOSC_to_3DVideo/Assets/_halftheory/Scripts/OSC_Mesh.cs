@@ -1,55 +1,179 @@
-using UnityEngine;
-//using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace _halftheory {
 
+	public enum meshTopology {Triangles, Quads, Lines, LineStrip, Points} // unity enum MeshTopology has bugs
 	public enum meshColor {white, red, black, blue, cyan, green, grey, magenta, yellow}
-	public enum meshShader {Color, Standard, Transparent}
+	public enum meshShader {Color, Standard, Transparent, Specular}
 
 	public class OSC_Mesh_Data : ScriptableObject {
-		public bool active = false;
-		public int peaks = 0;
-		public float level = 0.0f;
-		public MeshTopology meshTopologySelect = MeshTopology.LineStrip;
-		public meshColor meshColorSelect = meshColor.white;
-		public meshShader meshShaderSelect = meshShader.Color;
-		public float alpha = 1f;
-		public bool randomX = false;
-		public bool randomY = false;
-		public float rotateSpeed = 0.0f;
-		public float smoothTime = 0.0f;
-		public float clearTime = 0.0f;
-		public bool noClearTime = false;
-		public float traceTime = 0.0f;
+		public bool active = MainSettingsVars.defaults["meshActive"];
+		public int peaks = MainSettingsVars.defaults["meshPeaks"];
+		public float level = MainSettingsVars.defaults["meshLevel"];
+		public meshTopology meshTopologySelect = MainSettingsVars.defaults["meshTopology"];
+		public meshColor meshColorSelect = MainSettingsVars.defaults["meshColor"];
+		public meshShader meshShaderSelect = MainSettingsVars.defaults["meshShader"];
+		public float alpha = MainSettingsVars.defaults["meshAlpha"];
+		public bool randomX = MainSettingsVars.defaults["meshRandomX"];
+		public bool randomY = MainSettingsVars.defaults["meshRandomY"];
+		public float rotateSpeed = MainSettingsVars.defaults["meshRotateSpeed"];
+		public float smoothTime = MainSettingsVars.defaults["meshSmoothTime"];
+		public float clearTime = MainSettingsVars.defaults["meshClearTime"];
+		public bool noClearTime = MainSettingsVars.defaults["meshNoClearTime"];
+		public float traceTime = MainSettingsVars.defaults["meshTraceTime"];
 	}
 
 	[RequireComponent(typeof(MeshFilter)), RequireComponent(typeof(MeshRenderer))]
 	public class OSC_Mesh : MonoBehaviour {
 
+		private bool initialized = false;
+
 		private OSC_Animation parentAnimation;
-		private int meshNumber;
+		[HideInInspector] public int meshNumber;
 	    public Mesh mesh;
 	    public Material material;
 		public OSC_Mesh_Data data;
 
 		// use these in operation, only load/save to data
-		public bool active;
-		public int peaks;
-		public float level;
-		public MeshTopology meshTopologySelect;
-		public meshColor meshColorSelect;
-		public meshShader meshShaderSelect;
-		public float alpha;
-		public bool randomX;
-		public bool randomY;
-		public float rotateSpeed;
-		public float smoothTime;
-		public float clearTime;
-		public bool noClearTime;
-		public float traceTime;
+		public bool _active;
+		public bool active {
+            get { return _active; }
+            set { if (_active != value) {
+					dataAnimationAddKey("_active", value, _active);
+            	}
+            	_active = value;
+            }
+		}
+		public int _peaks;
+		public int peaks {
+            get { return _peaks; }
+            set { if (_peaks != value) {
+					dataAnimationAddKey("_peaks", value, _peaks);
+            	}
+            	_peaks = value;
+            }
+		}
+		public float _level;
+		public float level {
+            get { return _level; }
+            set { if (_level != value) {
+					dataAnimationAddKey("_level", value, _level);
+            	}
+            	_level = value;
+            }
+		}
+		public meshTopology _meshTopologySelect;
+		public meshTopology meshTopologySelect {
+            get { return _meshTopologySelect; }
+            set { if (_meshTopologySelect != value) {
+					dataAnimationAddKey("_meshTopologySelect", value, _meshTopologySelect);
+            	}
+            	_meshTopologySelect = value;
+            }
+		}
+		public meshColor _meshColorSelect;
+		public meshColor meshColorSelect {
+            get { return _meshColorSelect; }
+            set { if (_meshColorSelect != value) {
+					dataAnimationAddKey("_meshColorSelect", value, _meshColorSelect);
+            	}
+            	_meshColorSelect = value;
+            }
+		}
+		public meshShader _meshShaderSelect;
+		public meshShader meshShaderSelect {
+            get { return _meshShaderSelect; }
+            set { if (_meshShaderSelect != value) {
+					dataAnimationAddKey("_meshShaderSelect", value, _meshShaderSelect);
+            	}
+            	_meshShaderSelect = value;
+            }
+		}
+		public float _alpha;
+		public float alpha {
+            get { return _alpha; }
+            set { if (_alpha != value) {
+					dataAnimationAddKey("_alpha", value, _alpha);
+            	}
+            	_alpha = value;
+            }
+		}
+		public bool _randomX;
+		public bool randomX {
+            get { return _randomX; }
+            set { if (_randomX != value) {
+					dataAnimationAddKey("_randomX", value, _randomX);
+            	}
+            	_randomX = value;
+            }
+		}
+		public bool _randomY;
+		public bool randomY {
+            get { return _randomY; }
+            set { if (_randomY != value) {
+					dataAnimationAddKey("_randomY", value, _randomY);
+            	}
+            	_randomY = value;
+            }
+		}
+		public float _rotateSpeed;
+		public float rotateSpeed {
+            get { return _rotateSpeed; }
+            set { if (_rotateSpeed != value) {
+					dataAnimationAddKey("_rotateSpeed", value, _rotateSpeed);
+            	}
+            	_rotateSpeed = value;
+            }
+		}
+		public float _smoothTime;
+		public float smoothTime {
+            get { return _smoothTime; }
+            set { if (_smoothTime != value) {
+					dataAnimationAddKey("_smoothTime", value, _smoothTime);
+            	}
+            	_smoothTime = value;
+            }
+		}
+		public float _clearTime;
+		public float clearTime {
+            get { return _clearTime; }
+            set { if (_clearTime != value) {
+					dataAnimationAddKey("_clearTime", value, _clearTime);
+            	}
+            	_clearTime = value;
+            }
+		}
+		public bool _noClearTime;
+		public bool noClearTime {
+            get { return _noClearTime; }
+            set { if (_noClearTime != value) {
+					dataAnimationAddKey("_noClearTime", value, _noClearTime);
+            	}
+            	_noClearTime = value;
+            }
+		}
+		public float _traceTime;
+		public float traceTime {
+            get { return _traceTime; }
+            set { if (_traceTime != value) {
+					dataAnimationAddKey("_traceTime", value, _traceTime);
+            	}
+            	_traceTime = value;
+            }
+		}
+
+		// save changes to animation curves
+		public void dataAnimationAddKey(string field, dynamic value, dynamic valueOld) {
+			if (!initialized) {
+				return;
+			}
+        	if (MainSettingsVars.data.currentGameMode == gameMode.record_animation && parentAnimation.active) {
+    			parentAnimation.dataAnimationAddKey(meshNumber, field, null, value, valueOld);
+        	}
+		}
 
 		// data
         public void loadData() {
@@ -93,34 +217,57 @@ namespace _halftheory {
         }
 
         // operation
-		void Start() {
-			meshNumber = transform.GetSiblingIndex();
+        void Initialize() {
+        	if (initialized) {
+        		return;
+        	}
+			if (GetComponent<MeshFilter>() == null) {
+				return;
+			}
+			if (GetComponent<MeshRenderer>() == null) {
+				return;
+			}
 			parentAnimation = (OSC_Animation)this.GetComponentInParent(typeof(OSC_Animation));
-			if (mesh == null && GetComponent<MeshFilter>() && GetComponent<MeshRenderer>()) {
-			    mesh = new Mesh();
-			    //mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
-			    mesh.MarkDynamic();
-			    GetComponent<MeshFilter>().mesh = mesh;
-				setShader(true);
-				setColor(true);
+			if (parentAnimation == null) {
+				return;
 			}
-			if (parentAnimation != null && mesh != null) {
-				InvokeRepeating("calculatePoints", MainSettingsVars.repeatInterval, MainSettingsVars.repeatInterval);
-				// maybe have to slow this to once per frame for render??
-			}
+			meshNumber = transform.GetSiblingIndex();
+		    mesh = new Mesh();
+		    //mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32; // 32 bit mesh
+		    mesh.MarkDynamic();
+		    GetComponent<MeshFilter>().mesh = mesh;
+			setShader(true);
+			setColor(true);
+        	initialized = true;
+        }
+		void Start() {
+			Initialize();
+			calculatePointsStart();
         }
 		void OnEnable() {
 			loadData();
+			calculatePointsStart();
 		}
         void OnDisable() {
+			calculatePointsStop();
         	saveData();
         }
+
+        // topology
+		private Dictionary<meshTopology, MeshTopology> meshTopologyArr = new Dictionary<meshTopology, MeshTopology>(){
+			{meshTopology.Triangles, MeshTopology.Triangles},
+			{meshTopology.Quads, MeshTopology.Quads},
+			{meshTopology.Lines, MeshTopology.Lines},
+			{meshTopology.LineStrip, MeshTopology.LineStrip},
+			{meshTopology.Points, MeshTopology.Points}
+		};
 
         // shader
 		private Dictionary<meshShader, string> meshShaderArr = new Dictionary<meshShader, string>(){
 			{meshShader.Color, "Unlit/Color"},
 			{meshShader.Standard, "Standard"},
-			{meshShader.Transparent, "Transparent/Diffuse"}
+			{meshShader.Transparent, "Transparent/Diffuse"},
+			{meshShader.Specular, "Specular"}
 		};
 		private string currentShader;
         void setShader(bool force = false) {
@@ -174,7 +321,7 @@ namespace _halftheory {
 
         void meshPointsAdd(int key, Dictionary<Vector4, Vector3> val) {
             if (meshPoints.Count >= MainSettingsVars.data.maxSizeCollections) {
-        		meshPoints.Remove(meshPoints.Keys.Last()); // works for SortedDictionary
+        		meshPoints.Remove(meshPoints.Keys.Last()); // only works for SortedDictionary
             }
             if (meshPoints.ContainsKey(key)) {
                 meshPoints[key] = val;
@@ -184,6 +331,27 @@ namespace _halftheory {
             }
         }
 
+        private bool calculatePointsActive = false;
+
+        public void calculatePointsStart() {
+			if (!initialized || !this.gameObject.activeInHierarchy || !parentAnimation.initialized || !parentAnimation.data.initialized || !parentAnimation.current) {
+				calculatePointsStop();
+				return;
+			}
+        	if (calculatePointsActive) {
+				return;
+        	}
+			InvokeRepeating("calculatePoints", MainSettingsVars.repeatInterval, MainSettingsVars.repeatInterval);
+			calculatePointsActive = true;
+			// maybe have to slow this to once per frame for render??
+        }
+        public void calculatePointsStop() {
+        	if (!calculatePointsActive) {
+				return;
+        	}
+        	CancelInvoke("calculatePoints");
+        	calculatePointsActive = false;
+        }
         void calculatePoints() {
         	if (currentPeaks != peaks) {
         		currentPeaks = peaks;
@@ -196,7 +364,6 @@ namespace _halftheory {
 				return;
 			}
 
-	        currentTime = Time.unscaledTime - parentAnimation.activeTime;
 			Vector4 start;
 			Vector3 end;
 
@@ -278,6 +445,7 @@ namespace _halftheory {
 
 			// make meshVertices
 			if (meshPoints.Count > 0) {
+		        currentTime = MainSettingsVars.time - parentAnimation.activeTime;
 				int index = 0;
 				foreach (var i in meshPoints.Keys.ToArray()) {
 					meshPoint = meshPoints[i];
@@ -317,7 +485,7 @@ namespace _halftheory {
             	if (echoObjArrType.Count > 0) {
             		if (echoObjArrType.Count >= MainSettingsVars.data.maxSizeChildren) {
 		                Transform testTransform = transform.Find(echoObjArrType[echoObjArrType.Keys.First()]);
-		                if (testTransform) {
+		                if (testTransform != null) {
 		                    Destroy(testTransform.gameObject);
 		                }
             			echoObjArrType.Remove(echoObjArrType.Keys.First());
@@ -336,13 +504,24 @@ namespace _halftheory {
                 echoObjArr.Add(echoType, echoObjArrType);
             }
         }
+        public void echoObjArrRemove(meshEchoType echoType, string name) {
+            if (echoObjArr.ContainsKey(echoType)) {
+            	echoObjArrType = echoObjArr[echoType];
+            	if (echoObjArrType.Count > 0) {
+            		var key = echoObjArrType.First(kvp => kvp.Value == name).Key;
+            		if (echoObjArrType.ContainsKey(key)) {
+            			echoObjArrType.Remove(key);
+            		}
+            	}
+            }
+        }
 
 		void Update() {
-			if (mesh == null) {
+			if (!initialized) {
 				return;
 			}
 			// make a copy
-			meshVerticesCopy = meshVertices;
+			meshVerticesCopy = new List<Vector3>(meshVertices);
 			// clear mesh
 			if (!active || meshVerticesCopy.Count == 0 || (meshVerticesCopy.Count != mesh.vertices.Length && mesh.vertices.Length > 0)) {
 				mesh.Clear();
@@ -357,16 +536,18 @@ namespace _halftheory {
 		        meshVerticesCopy.Clear();
 		        // get indices
 		        int meshIndicesLength = mesh.vertices.Length;
-				if (meshTopologySelect == MeshTopology.Triangles) {
+				if (meshTopologySelect == meshTopology.Triangles) {
 					// The number of supplied triangle indices must be a multiple of 3.
 					meshIndicesLength = Mathf.FloorToInt((float)meshIndicesLength / 3f) * 3;
 				}
 		        int[] meshIndices = Enumerable.Range(0, meshIndicesLength).ToArray();
 		        // set indices + topology
-	        	mesh.SetIndices(meshIndices, meshTopologySelect, 0, false);
+	        	mesh.SetIndices(meshIndices, meshTopologyArr[meshTopologySelect], 0, false);
+	        	#if !UNITY_EDITOR
 		        // shader + color
 				setShader();
 				setColor();
+				#endif
 				// echo objects
 				// clear
 	        	if (noClearTime) {
@@ -394,5 +575,16 @@ namespace _halftheory {
 				transform.RotateAround(parentAnimation.data.worldCenter, transform.up, Time.smoothDeltaTime * (rotateSpeed * -1f * 90f));
 			}
 		}
+
+		#if UNITY_EDITOR
+		void LateUpdate() {
+			if (!initialized) {
+				return;
+			}
+	        // shader + color
+			setShader();
+			setColor();
+		}
+		#endif
 	}
 }

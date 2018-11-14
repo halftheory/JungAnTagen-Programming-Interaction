@@ -118,7 +118,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 478.0, 210.383423, 77.0, 22.0 ],
-									"presentation_rect" : [ 481.0, 208.383423, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "peaks $1"
 								}
@@ -137,7 +136,6 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 478.0, 184.383423, 50.0, 22.0 ],
-									"presentation_rect" : [ 481.0, 182.383423, 0.0, 0.0 ],
 									"style" : ""
 								}
 
@@ -174,7 +172,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 49.0, 267.0, 29.5, 22.0 ],
-									"presentation_rect" : [ 51.0, 267.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "1"
 								}
@@ -188,7 +185,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 6.5, 267.0, 29.5, 22.0 ],
-									"presentation_rect" : [ 8.5, 267.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "0"
 								}
@@ -241,7 +237,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 6.5, 229.0, 79.0, 22.0 ],
-									"presentation_rect" : [ 4.5, 258.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "automatic $1"
 								}
@@ -3102,7 +3097,7 @@
 					"presentation" : 1,
 					"presentation_rect" : [ 600.0, 510.0, 91.0, 30.0 ],
 					"style" : "",
-					"text" : "60",
+					"text" : "24",
 					"varname" : "osc_framerate",
 					"wordwrap" : 0
 				}
@@ -4608,7 +4603,16 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-11", 0 ],
+									"order" : 0,
+									"source" : [ "obj-7", 1 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-14", 0 ],
+									"order" : 1,
 									"source" : [ "obj-7", 1 ]
 								}
 
@@ -4629,16 +4633,7 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-11", 0 ],
-									"order" : 0,
-									"source" : [ "obj-74", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
 									"destination" : [ "obj-7", 0 ],
-									"order" : 1,
 									"source" : [ "obj-74", 0 ]
 								}
 
@@ -7692,7 +7687,7 @@
 					"presentation" : 1,
 					"presentation_rect" : [ 435.0, 270.0, 61.0, 30.0 ],
 					"style" : "",
-					"text" : "0.9",
+					"text" : "0.8",
 					"varname" : "analysis_volume_high",
 					"wordwrap" : 0
 				}
@@ -7713,7 +7708,7 @@
 					"presentation" : 1,
 					"presentation_rect" : [ 435.0, 225.0, 60.0, 30.0 ],
 					"style" : "",
-					"text" : "0.5",
+					"text" : "0.3",
 					"varname" : "analysis_volume_mid",
 					"wordwrap" : 0
 				}
@@ -7769,7 +7764,7 @@
 					"presentation" : 1,
 					"presentation_rect" : [ 300.0, 270.0, 61.0, 30.0 ],
 					"style" : "",
-					"text" : "8000",
+					"text" : "12000",
 					"varname" : "analysis_frequency_high",
 					"wordwrap" : 0
 				}
@@ -7790,7 +7785,7 @@
 					"presentation" : 1,
 					"presentation_rect" : [ 300.0, 225.0, 61.0, 30.0 ],
 					"style" : "",
-					"text" : "200",
+					"text" : "400",
 					"varname" : "analysis_frequency_mid",
 					"wordwrap" : 0
 				}
@@ -8276,7 +8271,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 323.5, 249.5, 96.0, 22.0 ],
 									"style" : "",
-									"text" : "port 1234"
+									"text" : "port 8888"
 								}
 
 							}
@@ -8862,7 +8857,7 @@
 					"presentation" : 1,
 					"presentation_rect" : [ 495.0, 510.0, 90.0, 30.0 ],
 					"style" : "",
-					"text" : "1234",
+					"text" : "8888",
 					"varname" : "osc_port",
 					"wordwrap" : 0
 				}
@@ -8877,45 +8872,45 @@
 					"outlettype" : [ "", "", "", "" ],
 					"patching_rect" : [ 1155.0, 390.0, 58.0, 22.0 ],
 					"restore" : 					{
-						"analysis_frequency_high" : [ 8000 ],
+						"analysis_frequency_high" : [ 12000 ],
 						"analysis_frequency_low" : [ 40 ],
-						"analysis_frequency_mid" : [ 200 ],
-						"analysis_group0_active" : [ 0 ],
+						"analysis_frequency_mid" : [ 400 ],
+						"analysis_group0_active" : [ 1 ],
 						"analysis_group0_level" : [ 1.0 ],
-						"analysis_group0_peaks" : [ 0 ],
+						"analysis_group0_peaks" : [ 18 ],
 						"analysis_group1_active" : [ 1 ],
 						"analysis_group1_level" : [ 1.0 ],
-						"analysis_group1_peaks" : [ 200 ],
-						"analysis_group2_active" : [ 0 ],
+						"analysis_group1_peaks" : [ 88 ],
+						"analysis_group2_active" : [ 1 ],
 						"analysis_group2_level" : [ 1.0 ],
-						"analysis_group2_peaks" : [ 0 ],
-						"analysis_group3_active" : [ 0 ],
-						"analysis_group3_level" : [ 1.0 ],
-						"analysis_group3_peaks" : [ 0 ],
-						"analysis_volume_high" : [ 0.9 ],
+						"analysis_group2_peaks" : [ 26 ],
+						"analysis_group3_active" : [ 1 ],
+						"analysis_group3_level" : [ 0.384615 ],
+						"analysis_group3_peaks" : [ 200 ],
+						"analysis_volume_high" : [ 0.8 ],
 						"analysis_volume_low" : [ 0.01 ],
-						"analysis_volume_mid" : [ 0.5 ],
+						"analysis_volume_mid" : [ 0.3 ],
 						"analysis_x_high" : [ 1 ],
 						"analysis_x_low" : [ -1 ],
 						"analysis_y_high" : [ 1 ],
 						"analysis_y_low" : [ -1 ],
 						"analysis_z_high" : [ 2 ],
 						"analysis_z_low" : [ 0 ],
-						"audio_file_loop" : [ 1 ],
+						"audio_file_loop" : [ 0 ],
 						"audio_file_path" : [ "work:/projects_working/stefanjuster-sine-machine/_test-material/audio/Additive Synthesis, Razor/04 Notch Filter/04 Notch Filter 1.wav" ],
 						"audio_input_device" : [ 0 ],
 						"audio_output" : [ 0 ],
 						"audio_output_device" : [ 0 ],
 						"audio_sr" : [ 1 ],
-						"osc_framerate" : [ 60 ],
+						"osc_framerate" : [ 24 ],
 						"osc_host" : [ "localhost" ],
 						"osc_output" : [ 1 ],
-						"osc_port" : [ 1234 ]
+						"osc_port" : [ 8888 ]
 					}
 ,
 					"style" : "",
 					"text" : "autopattr",
-					"varname" : "u956007542"
+					"varname" : "u613001894"
 				}
 
 			}
@@ -8958,7 +8953,7 @@
 ,
 					"style" : "",
 					"text" : "pattrstorage @autorestore 1 @savemode 3 @fileusagemode 1",
-					"varname" : "u216007538"
+					"varname" : "u676001892"
 				}
 
 			}

@@ -32,7 +32,7 @@
 		<pattr name = "audio_output" value = "1" />
 		<pattr name = "audio_output_device" value = "0" />
 		<pattr name = "audio_sr" value = "1" />
-		<pattr name = "osc_framerate" value = "60" />
+		<pattr name = "osc_framerate" value = "24" />
 		<pattr name = "osc_host" value = "localhost" />
 		<pattr name = "osc_output" value = "1" />
 		<pattr name = "osc_port" value = "8888" />
