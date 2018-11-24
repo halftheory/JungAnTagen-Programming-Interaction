@@ -162,6 +162,18 @@ namespace _halftheory {
                     guiTextFields.Add(guiTextFieldId+label, value.ToString());
                     guiTextFieldsValues.Add(guiTextFieldId+label, value);
                 }
+
+                guiTextFields[guiTextFieldId+label] = Regex.Replace(guiTextFields[guiTextFieldId+label], "["+KeyCode.KeypadPeriod+KeyCode.Comma+KeyCode.Period+",]+", ".", RegexOptions.IgnoreCase);
+                /*
+                KeyCode.KeypadPeriod
+                KeyCode.KeypadMinus
+                KeyCode.KeypadPlus
+                KeyCode.Plus
+                KeyCode.Comma
+                KeyCode.Minus
+                KeyCode.Period
+                */
+
                 guiTextFields[guiTextFieldId+label] = Regex.Replace(guiTextFields[guiTextFieldId+label], "[^0-9-+\\.]+", "", RegexOptions.IgnoreCase);
                 string valueString = GUILayout.TextField(guiTextFields[guiTextFieldId+label], 10, GUILayout.Width(valueWidth));
                 if (guiTextFields[guiTextFieldId+label] != valueString) {
