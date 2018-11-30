@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -91,11 +92,20 @@ namespace _halftheory {
                 if (valueDefault == null) {
                     valueDefault = 0;
                 }
+                else {
+                    valueDefault = (int)valueDefault;
+                }
                 if (min == null) {
                     min = 0;
                 }
+                else {
+                    min = (int)min;
+                }
                 if (max == null) {
                     max = 100;
+                }
+                else {
+                    max = (int)max;
                 }
                 GUILayout.BeginHorizontal();
                 string labelNew = label+" (default "+valueDefault.ToString()+")";
@@ -116,14 +126,14 @@ namespace _halftheory {
                 string valueString = GUILayout.TextField(guiTextFields[guiTextFieldId+label], 10, GUILayout.Width(valueWidth));
                 if (guiTextFields[guiTextFieldId+label] != valueString) {
                     guiTextFields[guiTextFieldId+label] = valueString;
-                    var match = Regex.Match(guiTextFields[guiTextFieldId+label], @"([-+]?[0-9]+)");
-                    if (match.Success) {
-                        int valueNew = int.Parse(match.Groups[1].Value);
+                    try {
+                        int valueNew = int.Parse(valueString);
                         if (valueNew <= max && valueNew >= min) {
                             value = valueNew;
                             guiTextFieldsValues[guiTextFieldId+label] = value;
                         }
                     }
+                    catch (Exception) { }
                 }
                 else if (guiTextFieldsValues[guiTextFieldId+label] != value) {
                     guiTextFieldsValues[guiTextFieldId+label] = value;
@@ -139,13 +149,22 @@ namespace _halftheory {
             }
             else if (value.GetType() == typeof(float)) {
                 if (valueDefault == null) {
-                    valueDefault = 0f;
+                    valueDefault = 0.0f;
+                }
+                else {
+                    valueDefault = (float)valueDefault;
                 }
                 if (min == null) {
-                    min = 0f;
+                    min = 0.0f;
+                }
+                else {
+                    min = (float)min;
                 }
                 if (max == null) {
-                    max = 1f;
+                    max = 1.0f;
+                }
+                else {
+                    max = (float)max;
                 }
                 GUILayout.BeginHorizontal();
                 string labelNew = label+" (default "+valueDefault.ToString()+")";
@@ -162,30 +181,18 @@ namespace _halftheory {
                     guiTextFields.Add(guiTextFieldId+label, value.ToString());
                     guiTextFieldsValues.Add(guiTextFieldId+label, value);
                 }
-
-                guiTextFields[guiTextFieldId+label] = Regex.Replace(guiTextFields[guiTextFieldId+label], "["+KeyCode.KeypadPeriod+KeyCode.Comma+KeyCode.Period+",]+", ".", RegexOptions.IgnoreCase);
-                /*
-                KeyCode.KeypadPeriod
-                KeyCode.KeypadMinus
-                KeyCode.KeypadPlus
-                KeyCode.Plus
-                KeyCode.Comma
-                KeyCode.Minus
-                KeyCode.Period
-                */
-
                 guiTextFields[guiTextFieldId+label] = Regex.Replace(guiTextFields[guiTextFieldId+label], "[^0-9-+\\.]+", "", RegexOptions.IgnoreCase);
                 string valueString = GUILayout.TextField(guiTextFields[guiTextFieldId+label], 10, GUILayout.Width(valueWidth));
                 if (guiTextFields[guiTextFieldId+label] != valueString) {
                     guiTextFields[guiTextFieldId+label] = valueString;
-                    var match = Regex.Match(guiTextFields[guiTextFieldId+label], @"([-+]?[0-9]*\.?[0-9]+)");
-                    if (match.Success) {
-                        float valueNew = float.Parse(match.Groups[1].Value);
+                    try {
+                        float valueNew = float.Parse(valueString);
                         if (valueNew <= max && valueNew >= min) {
                             value = valueNew;
                             guiTextFieldsValues[guiTextFieldId+label] = value;
                         }
                     }
+                    catch (Exception) { }
                 }
                 else if (guiTextFieldsValues[guiTextFieldId+label] != value) {
                     guiTextFieldsValues[guiTextFieldId+label] = value;
@@ -197,6 +204,7 @@ namespace _halftheory {
                 }
                 GUILayout.EndHorizontal();
                 value = GUILayout.HorizontalSlider(value, min, max);
+                value = (float)value;
             }
             GUILayout.EndVertical();
             return value;
@@ -581,7 +589,7 @@ namespace _halftheory {
                         GUILayout.Label("Group "+(i+1), guiStyleLabelCenter);
                         MainSettingsVars.currentAnimationComponent.meshComponents[i].active = guiField(MainSettingsVars.currentAnimationComponent.meshComponents[i].active, "Active");
                         MainSettingsVars.currentAnimationComponent.meshComponents[i].peaks = guiField(MainSettingsVars.currentAnimationComponent.meshComponents[i].peaks, "Peaks", MainSettingsVars.defaults["meshPeaks"], 0, MainSettingsVars.pointsLength, true);
-                        MainSettingsVars.currentAnimationComponent.meshComponents[i].level = guiField(MainSettingsVars.currentAnimationComponent.meshComponents[i].level, "Level", MainSettingsVars.defaults["meshLevel"], 0.0f, 1f, true);
+                        MainSettingsVars.currentAnimationComponent.meshComponents[i].level = guiField(MainSettingsVars.currentAnimationComponent.meshComponents[i].level, "Level", MainSettingsVars.defaults["meshLevel"], 0.0f, 1.0f, true);
                         guiToggleMeshTopology[i] = guiLabel(guiToggleMeshTopology[i], "Topology", MainSettingsVars.currentAnimationComponent.meshComponents[i].meshTopologySelect.ToString(), true);
                         if (guiToggleMeshTopology[i]) {
                             guiGridMeshTopologyIntNew[i] = GUILayout.SelectionGrid(guiGridMeshTopologyInt[i], guiGridMeshTopology, 2);
@@ -610,15 +618,15 @@ namespace _halftheory {
                             }
                         }
                         if (guiGridMeshShaderInt[i] == 2) {
-                            MainSettingsVars.currentAnimationComponent.meshComponents[i].alpha = guiField(MainSettingsVars.currentAnimationComponent.meshComponents[i].alpha, "Opacity", MainSettingsVars.defaults["meshAlpha"], 0.0f, 1f, true);
+                            MainSettingsVars.currentAnimationComponent.meshComponents[i].alpha = guiField(MainSettingsVars.currentAnimationComponent.meshComponents[i].alpha, "Opacity", MainSettingsVars.defaults["meshAlpha"], 0.0f, 1.0f, true);
                         }
                         MainSettingsVars.currentAnimationComponent.meshComponents[i].randomX = guiField(MainSettingsVars.currentAnimationComponent.meshComponents[i].randomX, "Random end X", null, null, null, true);
                         MainSettingsVars.currentAnimationComponent.meshComponents[i].randomY = guiField(MainSettingsVars.currentAnimationComponent.meshComponents[i].randomY, "Random end Y", null, null, null, true);
-                        MainSettingsVars.currentAnimationComponent.meshComponents[i].rotateSpeed = guiField(MainSettingsVars.currentAnimationComponent.meshComponents[i].rotateSpeed, "Rotate", MainSettingsVars.defaults["meshRotateSpeed"], -1f, 1f, true);
+                        MainSettingsVars.currentAnimationComponent.meshComponents[i].rotateSpeed = guiField(MainSettingsVars.currentAnimationComponent.meshComponents[i].rotateSpeed, "Rotate", MainSettingsVars.defaults["meshRotateSpeed"], -1.0f, 1.0f, true);
                         MainSettingsVars.currentAnimationComponent.meshComponents[i].smoothTime = guiField(MainSettingsVars.currentAnimationComponent.meshComponents[i].smoothTime, "Smooth time", MainSettingsVars.defaults["meshSmoothTime"], 0.0f, 0.5f, true);
-                        MainSettingsVars.currentAnimationComponent.meshComponents[i].clearTime = guiField(MainSettingsVars.currentAnimationComponent.meshComponents[i].clearTime, "Clear time", MainSettingsVars.defaults["meshClearTime"], 0.0f, 30f, true);
+                        MainSettingsVars.currentAnimationComponent.meshComponents[i].clearTime = guiField(MainSettingsVars.currentAnimationComponent.meshComponents[i].clearTime, "Clear time", MainSettingsVars.defaults["meshClearTime"], 0.0f, 30.0f, true);
                         MainSettingsVars.currentAnimationComponent.meshComponents[i].noClearTime = guiField(MainSettingsVars.currentAnimationComponent.meshComponents[i].noClearTime, "No clear time", null, null, null, true);
-                        MainSettingsVars.currentAnimationComponent.meshComponents[i].traceTime = guiField(MainSettingsVars.currentAnimationComponent.meshComponents[i].traceTime, "Trace time", MainSettingsVars.defaults["meshTraceTime"], 0.0f, 2f, true);
+                        MainSettingsVars.currentAnimationComponent.meshComponents[i].traceTime = guiField(MainSettingsVars.currentAnimationComponent.meshComponents[i].traceTime, "Trace time", MainSettingsVars.defaults["meshTraceTime"], 0.0f, 2.0f, true);
                         GUILayout.EndVertical();
                     }
                     GUILayout.EndHorizontal();
