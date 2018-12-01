@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-#if UNITY_STANDALONE_OSX
-using System.Diagnostics;
-#endif
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
@@ -666,29 +663,6 @@ namespace _halftheory {
         }
 
         void Awake() {
-            // fix permissions on build
-            #if UNITY_STANDALONE_OSX
-            bool test = MainSettingsVars.hasRootFolder();
-            if (test) {
-                Process xattrProcess;
-                xattrProcess = Process.Start(new ProcessStartInfo {
-                    FileName = "xattr",
-                    Arguments = "-dr com.apple.quarantine "+MainSettingsVars.rootFolder+"build",
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    RedirectStandardInput = true,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true
-                });
-                xattrProcess.PriorityClass = ProcessPriorityClass.Idle;
-                xattrProcess.StandardInput.Close();
-                xattrProcess.WaitForExit();
-                xattrProcess.Close();
-                xattrProcess.Dispose();
-                xattrProcess = null;
-            }
-            #endif
-
             if (MainSettingsVars.forceFPS) {
                 QualitySettings.vSyncCount = 0;
             }
