@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_STANDALONE_OSX
+using System.Diagnostics;
+#endif
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
@@ -577,7 +580,7 @@ namespace _halftheory {
                 MainSettingsVars.lightComponent.color = Color.white;
             }
             else {
-                Debug.Log("HALFTHEORY: "+this.GetType()+": Light not found");
+                UnityEngine.Debug.Log("HALFTHEORY: "+this.GetType()+": Light not found");
             }
             // mouselook
             if (GetComponent<MouseLook>()) {
@@ -599,7 +602,7 @@ namespace _halftheory {
                 MainSettingsVars.renderCamerasComponents.Add(0, new Camera[]{ MainSettingsVars.maincameraComponent });
             }
             else {
-                Debug.Log("HALFTHEORY: "+this.GetType()+": Camera not found");
+                UnityEngine.Debug.Log("HALFTHEORY: "+this.GetType()+": Camera not found");
                 yield break;
             }
 
@@ -615,7 +618,7 @@ namespace _halftheory {
                 }
             }
             else {
-                Debug.Log("HALFTHEORY: "+this.GetType()+": stereo3dCameraSBS not found");
+                UnityEngine.Debug.Log("HALFTHEORY: "+this.GetType()+": stereo3dCameraSBS not found");
                 yield break;
             }
 
@@ -629,7 +632,7 @@ namespace _halftheory {
                 }
             }
             else {
-                Debug.Log("HALFTHEORY: "+this.GetType()+": OSC not found");
+                UnityEngine.Debug.Log("HALFTHEORY: "+this.GetType()+": OSC not found");
                 yield break;
             }
 
@@ -639,7 +642,7 @@ namespace _halftheory {
                 MainSettingsVars.guiComponent = guiComponent;
             }
             else {
-                Debug.Log("HALFTHEORY: "+this.GetType()+": GUISettings not found");
+                UnityEngine.Debug.Log("HALFTHEORY: "+this.GetType()+": GUISettings not found");
             }
 
             MainSettingsVars.initialized = true;
@@ -648,7 +651,7 @@ namespace _halftheory {
             bool test = MainSettingsVars.loadData();
             yield return null;
             if (!test) {
-                Debug.Log("HALFTHEORY: "+this.GetType()+": loadData failed");
+                UnityEngine.Debug.Log("HALFTHEORY: "+this.GetType()+": loadData failed");
                 yield break;
             }
 
@@ -656,13 +659,36 @@ namespace _halftheory {
             test = MainSettingsVars.loadCurrentAnimation(MainSettingsVars.data.currentAnimation);
             yield return null;
             if (!test) {
-                Debug.Log("HALFTHEORY: "+this.GetType()+": loadCurrentAnimation failed");
+                UnityEngine.Debug.Log("HALFTHEORY: "+this.GetType()+": loadCurrentAnimation failed");
             }
 
             yield break;
         }
 
         void Awake() {
+            // fix permissions on build
+            #if UNITY_STANDALONE_OSX
+            bool test = MainSettingsVars.hasRootFolder();
+            if (test) {
+                Process xattrProcess;
+                xattrProcess = Process.Start(new ProcessStartInfo {
+                    FileName = "xattr",
+                    Arguments = "-dr com.apple.quarantine "+MainSettingsVars.rootFolder+"build",
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                });
+                xattrProcess.PriorityClass = ProcessPriorityClass.Idle;
+                xattrProcess.StandardInput.Close();
+                xattrProcess.WaitForExit();
+                xattrProcess.Close();
+                xattrProcess.Dispose();
+                xattrProcess = null;
+            }
+            #endif
+
             if (MainSettingsVars.forceFPS) {
                 QualitySettings.vSyncCount = 0;
             }
