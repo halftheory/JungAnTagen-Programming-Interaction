@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+
+<pattrstorage name = "u690000982">
+	<slot number = "1">
+		<pattr name = "analysis_b" value = "0" />
+		<pattr name = "analysis_b_cycle_time" value = "0" />
+		<pattr name = "analysis_b_frequency_high" value = "8000" />
+		<pattr name = "analysis_b_frequency_low" value = "40" />
+		<pattr name = "analysis_b_frequency_mid" value = "400" />
+		<pattr name = "analysis_g" value = "0" />
+		<pattr name = "analysis_g_cycle_time" value = "0" />
+		<pattr name = "analysis_g_frequency_high" value = "20000" />
+		<pattr name = "analysis_g_frequency_low" value = "200" />
+		<pattr name = "analysis_g_frequency_mid" value = "1000" />
+		<pattr name = "analysis_line_time" value = "39" />
+		<pattr name = "analysis_pan_time" value = "0" />
+		<pattr name = "analysis_r" value = "1" />
+		<pattr name = "analysis_r_cycle_time" value = "0" />
+		<pattr name = "analysis_r_frequency_high" value = "10000" />
+		<pattr name = "analysis_r_frequency_low" value = "100" />
+		<pattr name = "analysis_r_frequency_mid" value = "300" />
+		<pattr name = "analysis_resolution" value = "0.5" />
+		<pattr name = "analysis_threshold" value = "0.5" />
+		<pattr name = "audio_output" value = "1" />
+		<pattr name = "audio_output_device" value = "0" />
+		<pattr name = "audio_sr" value = "1" />
+		<pattr name = "audio_vol" value = "0.1" />
+		<pattr name = "video_file_loop" value = "1" />
+		<pattr name = "video_file_path" value = "" />
+		<pattr name = "video_preview" value = "0" />
+		<pattr name = "video_sbs" value = "0" />
+		<pattr name = "video_vol" value = "0." />
+	</slot>
+</pattrstorage>
+

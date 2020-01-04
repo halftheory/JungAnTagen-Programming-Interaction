@@ -291,12 +291,16 @@ namespace _halftheory {
 			{meshColor.yellow, Color.yellow}
 		};
 		private Color currentColor;
+		private Color[] meshColorArrSpecular = { Color.red, Color.green, Color.blue, Color.cyan, Color.magenta, Color.yellow, Color.clear };
         void setColor(bool force = false) {
         	if (currentColor != meshColorArr[meshColorSelect] || meshShaderSelect == meshShader.Transparent || force) {
 	        	currentColor = meshColorArr[meshColorSelect];
 	        	if (meshShaderSelect == meshShader.Transparent) {
 		        	currentColor.a = alpha;
 		        }
+	        	else if (meshShaderSelect == meshShader.Specular) {
+		        	material.SetFloat("_Shininess", 0.01f);
+	        	}
 	        	material.color = currentColor;
 				GetComponent<MeshRenderer>().material = material;
         	}
@@ -573,6 +577,11 @@ namespace _halftheory {
 			// rotate - leave for children
 			if (rotateSpeed != 0.0f) {
 				transform.RotateAround(parentAnimation.data.worldCenter, transform.up, Time.smoothDeltaTime * (rotateSpeed * -1f * 90f));
+			}
+			// shader Specular
+			if (meshShaderSelect == meshShader.Specular) {
+				int specularIndex = Mathf.FloorToInt(Random.Range(0f, (float)meshColorArrSpecular.Length - 0.01f));
+				material.SetColor("_SpecColor", meshColorArrSpecular[specularIndex]);
 			}
 		}
 

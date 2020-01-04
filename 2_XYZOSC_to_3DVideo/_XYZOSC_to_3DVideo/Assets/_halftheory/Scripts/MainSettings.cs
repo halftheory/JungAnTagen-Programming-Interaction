@@ -161,9 +161,9 @@ namespace _halftheory {
         }
         public static string dataFileSuffix = "MainSettingsData.json";
         public static string dataFile;
-        public static string rootFolder; // contains trailing slash
         public static string recordFolderSuffix = "record";
         public static string recordFolder;
+        public static string githubFolder = "2_XYZOSC_to_3DVideo";
 
         /* OBJECTS + COMPONENTS */
         public static MainSettings mainsettingsComponent;
@@ -368,34 +368,54 @@ namespace _halftheory {
             }
             return (false);
         }
-        public static bool hasRootFolder() {
-            if (!string.IsNullOrEmpty(rootFolder)) {
-                return (true);
-            }
-            string splitter = "/2_XYZOSC_to_3DVideo/";
-            if (Application.dataPath.IndexOf(splitter) == -1) {
-                return (false);
-            }
-            string[] parts = Regex.Split(Application.dataPath, splitter);
-            rootFolder = parts[0]+splitter;
-            return (true);
-        }
         public static bool hasRecordFolder() {
             if (!string.IsNullOrEmpty(recordFolder)) {
                 return (true);
             }
-            bool test = hasRootFolder();
-            if (!test) {
-                return (false);
+            string rootFolder = "";
+            // try next to editor or standalone
+            string pathEnd = "";
+            #if UNITY_EDITOR
+                pathEnd = "Assets";
+            #elif UNITY_STANDALONE_OSX
+                pathEnd = "Contents";
+            #elif UNITY_STANDALONE // win + linux
+                pathEnd = "_XYZOSC_to_3DVideo_Data";
+            #endif
+            if (!string.IsNullOrEmpty(pathEnd)) {
+                if (Application.dataPath.IndexOf("/"+pathEnd) != -1) {
+                    string[] parts = Regex.Split(Application.dataPath, "/[^/]+/"+pathEnd);
+                    if (Directory.Exists(parts[0])) {
+                        rootFolder = parts[0];
+                    }
+                }
             }
-            if (Directory.Exists(rootFolder+recordFolderSuffix)) {
-                recordFolder = rootFolder+recordFolderSuffix;
-                return (true);
+            // try the github project
+            if (string.IsNullOrEmpty(rootFolder)) {
+                if (Application.dataPath.IndexOf("/"+githubFolder) != -1) {
+                    string[] parts = Regex.Split(Application.dataPath, "/"+githubFolder);
+                    if (Directory.Exists(parts[0])) {
+                        rootFolder = parts[0]+"/"+githubFolder;
+                    }
+                }
             }
-            Directory.CreateDirectory(rootFolder+recordFolderSuffix);
-            if (Directory.Exists(rootFolder+recordFolderSuffix)) {
-                recordFolder = rootFolder+recordFolderSuffix;
-                return (true);
+            // try desktop
+            if (string.IsNullOrEmpty(rootFolder)) {
+                pathEnd = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop);
+                if (Directory.Exists(pathEnd)) {
+                    rootFolder = pathEnd;
+                }
+            }
+            if (!string.IsNullOrEmpty(rootFolder)) {
+                if (Directory.Exists(rootFolder+"/"+recordFolderSuffix)) {
+                    recordFolder = rootFolder+"/"+recordFolderSuffix;
+                    return (true);
+                }
+                Directory.CreateDirectory(rootFolder+"/"+recordFolderSuffix);
+                if (Directory.Exists(rootFolder+"/"+recordFolderSuffix)) {
+                    recordFolder = rootFolder+"/"+recordFolderSuffix;
+                    return (true);
+                }
             }
             return (false);
         }
@@ -404,19 +424,45 @@ namespace _halftheory {
             if (!test) {
                 return;
             }
-            test = hasRootFolder();
-            if (!test) {
-                return;
-            }
             if (currentAnimationComponent != null) {
                 currentAnimationComponent.stopAndSave();
             }
-            #if UNITY_EDITOR
-                string editorDir = dataFolder;
-                string runtimeDir = rootFolder+"build/_XYZOSC_to_3DVideo.app/Contents/"+dataFolderSuffix;
+            string runtimeDir = "";
+            string editorDir = "";
+            #if UNITY_STANDALONE
+                runtimeDir = dataFolder;
+                if (Application.dataPath.IndexOf("/"+githubFolder) != -1) {
+                    string[] parts = Regex.Split(Application.dataPath, "/"+githubFolder);
+                    if (Directory.Exists(parts[0]+"/"+githubFolder+"/_XYZOSC_to_3DVideo/Assets")) {
+                        editorDir = parts[0]+"/"+githubFolder+"/_XYZOSC_to_3DVideo/Assets/"+dataFolderSuffix;
+                    }
+                }
+            #elif UNITY_EDITOR_OSX
+                editorDir = dataFolder;
+                if (Application.dataPath.IndexOf("/"+githubFolder) != -1) {
+                    string[] parts = Regex.Split(Application.dataPath, "/"+githubFolder);
+                    if (Directory.Exists(parts[0]+"/"+githubFolder+"/build/osx/_XYZOSC_to_3DVideo.app/Contents")) {
+                        runtimeDir = parts[0]+"/"+githubFolder+"/build/osx/_XYZOSC_to_3DVideo.app/Contents/"+dataFolderSuffix;
+                    }
+                }
+            #elif UNITY_EDITOR_WIN
+                editorDir = dataFolder;
+                if (Application.dataPath.IndexOf("/"+githubFolder) != -1) {
+                    string[] parts = Regex.Split(Application.dataPath, "/"+githubFolder);
+                    if (Directory.Exists(parts[0]+"/"+githubFolder+"/build/win/_XYZOSC_to_3DVideo_Data")) {
+                        runtimeDir = parts[0]+"/"+githubFolder+"/build/win/_XYZOSC_to_3DVideo_Data/"+dataFolderSuffix;
+                    }
+                }
+            #elif UNITY_EDITOR_LINUX
+                editorDir = dataFolder;
+                if (Application.dataPath.IndexOf("/"+githubFolder) != -1) {
+                    string[] parts = Regex.Split(Application.dataPath, "/"+githubFolder);
+                    if (Directory.Exists(parts[0]+"/"+githubFolder+"/build/linux/_XYZOSC_to_3DVideo_Data")) {
+                        runtimeDir = parts[0]+"/"+githubFolder+"/build/linux/_XYZOSC_to_3DVideo_Data/"+dataFolderSuffix;
+                    }
+                }
             #else
-                string runtimeDir = dataFolder;
-                string editorDir = rootFolder+"_XYZOSC_to_3DVideo/Assets/"+dataFolderSuffix;
+                return;
             #endif
             switch (action) {
                 // "Copy Runtime Data to Editor",
@@ -430,13 +476,16 @@ namespace _halftheory {
             }
         }
         private static void DirectoryCopy(string sourceDir, string destDir) {
-            DirectoryInfo dir = new DirectoryInfo(sourceDir);
-            if (!dir.Exists) {
+            if (!Directory.Exists(sourceDir)) {
                 return;
             }
             if (!Directory.Exists(destDir)) {
                 Directory.CreateDirectory(destDir);
+                if (!Directory.Exists(destDir)) {
+                    return;
+                }
             }
+            DirectoryInfo dir = new DirectoryInfo(sourceDir);
             FileInfo[] files = dir.GetFiles();
             foreach (FileInfo file in files) {
                 if (file.Name.IndexOf(".meta") > 0) {

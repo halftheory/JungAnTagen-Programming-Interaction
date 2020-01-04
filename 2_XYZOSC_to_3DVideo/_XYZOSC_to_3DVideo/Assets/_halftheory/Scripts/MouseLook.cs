@@ -58,7 +58,7 @@ namespace _halftheory {
             else if (Input.GetMouseButton(1)) {
                 if (MainSettingsVars.currentAnimationComponent != null) {
                     if (MainSettingsVars.currentAnimationComponent.initialized && MainSettingsVars.currentAnimationComponent.data.initialized && MainSettingsVars.currentAnimationComponent.current) {
-                        MainSettingsVars.currentAnimationComponent.setCamera();
+                        MainSettingsVars.currentAnimationComponent.resetCamera();
                         return;
                     }
                 }

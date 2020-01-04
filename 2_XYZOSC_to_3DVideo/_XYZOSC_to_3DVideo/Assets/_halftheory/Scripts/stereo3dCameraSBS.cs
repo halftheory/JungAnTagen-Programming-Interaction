@@ -1,9 +1,6 @@
 /* adapted from s3dCameraSBS.js in http://projects.ict.usc.edu/mxr/diy/mxr-unity-package/ */
 using UnityEngine;
 using System.Collections;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace _halftheory {
 	[ExecuteInEditMode]
@@ -96,16 +93,6 @@ namespace _halftheory {
 				// must define tags first in Project Settings
 				leftCamRecord.tag = "leftCamRecord";
 				rightCamRecord.tag = "rightCamRecord";
-				#if UNITY_EDITOR
-				/*
-					if (EditorApplication.isPlaying) {
-						mainCamComponent.enabled = false;
-					}
-					else {
-						mainCamComponent.enabled = true; // need camera enabled when in edit mode
-					}
-				*/
-				#endif
 			}
 		}
 		void OnDisable() {
