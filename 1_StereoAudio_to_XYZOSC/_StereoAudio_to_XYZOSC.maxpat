@@ -3097,7 +3097,7 @@
 					"presentation" : 1,
 					"presentation_rect" : [ 600.0, 510.0, 91.0, 30.0 ],
 					"style" : "",
-					"text" : "24",
+					"text" : "60",
 					"varname" : "osc_framerate",
 					"wordwrap" : 0
 				}
@@ -3545,7 +3545,7 @@
 					"presentation" : 1,
 					"presentation_rect" : [ 525.0, 150.0, 210.0, 20.0 ],
 					"style" : "",
-					"text" : "1. Peak Detection (0-100 peaks)"
+					"text" : "1. Peak Detection (0-200 peaks)"
 				}
 
 			}
@@ -4003,7 +4003,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 785.0, 240.0, 814.0, 22.0 ],
 									"style" : "",
-									"text" : "/audio_file_path \"/projects_working/stefanjuster-sine-machine/_test-material/audio/Additive Synthesis, Razor/04 Notch Filter/04 Notch Filter 1.wav\""
+									"text" : "/audio_file_path"
 								}
 
 							}
@@ -5766,7 +5766,6 @@
 					"presentation" : 1,
 					"presentation_rect" : [ 660.0, 45.0, 360.0, 30.0 ],
 					"style" : "",
-					"text" : "\"work:/projects_working/stefanjuster-sine-machine/_test-material/audio/Additive Synthesis, Razor/04 Notch Filter/04 Notch Filter 1.wav\"",
 					"varname" : "audio_file_path",
 					"wordwrap" : 0
 				}
@@ -8877,16 +8876,16 @@
 						"analysis_frequency_mid" : [ 400 ],
 						"analysis_group0_active" : [ 1 ],
 						"analysis_group0_level" : [ 1.0 ],
-						"analysis_group0_peaks" : [ 18 ],
-						"analysis_group1_active" : [ 1 ],
+						"analysis_group0_peaks" : [ 50 ],
+						"analysis_group1_active" : [ 0 ],
 						"analysis_group1_level" : [ 1.0 ],
-						"analysis_group1_peaks" : [ 88 ],
-						"analysis_group2_active" : [ 1 ],
+						"analysis_group1_peaks" : [ 20 ],
+						"analysis_group2_active" : [ 0 ],
 						"analysis_group2_level" : [ 1.0 ],
-						"analysis_group2_peaks" : [ 26 ],
-						"analysis_group3_active" : [ 1 ],
-						"analysis_group3_level" : [ 0.384615 ],
-						"analysis_group3_peaks" : [ 200 ],
+						"analysis_group2_peaks" : [ 4 ],
+						"analysis_group3_active" : [ 0 ],
+						"analysis_group3_level" : [ 1.0 ],
+						"analysis_group3_peaks" : [ 4 ],
 						"analysis_volume_high" : [ 0.8 ],
 						"analysis_volume_low" : [ 0.01 ],
 						"analysis_volume_mid" : [ 0.3 ],
@@ -8896,13 +8895,13 @@
 						"analysis_y_low" : [ -1 ],
 						"analysis_z_high" : [ 2 ],
 						"analysis_z_low" : [ 0 ],
-						"audio_file_loop" : [ 0 ],
-						"audio_file_path" : [ "work:/projects_working/stefanjuster-sine-machine/_test-material/audio/Additive Synthesis, Razor/04 Notch Filter/04 Notch Filter 1.wav" ],
+						"audio_file_loop" : [ 1 ],
+						"audio_file_path" : [ "<empty>" ],
 						"audio_input_device" : [ 0 ],
-						"audio_output" : [ 0 ],
+						"audio_output" : [ 1 ],
 						"audio_output_device" : [ 0 ],
 						"audio_sr" : [ 1 ],
-						"osc_framerate" : [ 24 ],
+						"osc_framerate" : [ 60 ],
 						"osc_host" : [ "localhost" ],
 						"osc_output" : [ 1 ],
 						"osc_port" : [ 8888 ]
@@ -8910,7 +8909,7 @@
 ,
 					"style" : "",
 					"text" : "autopattr",
-					"varname" : "u613001894"
+					"varname" : "u638005275"
 				}
 
 			}
@@ -8953,7 +8952,7 @@
 ,
 					"style" : "",
 					"text" : "pattrstorage @autorestore 1 @savemode 3 @fileusagemode 1",
-					"varname" : "u676001892"
+					"varname" : "u411005273"
 				}
 
 			}

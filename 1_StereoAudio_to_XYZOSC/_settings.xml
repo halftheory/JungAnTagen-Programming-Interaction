@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 
-<pattrstorage name = "u005000619">
+<pattrstorage name = "u854000866">
 	<slot number = "1">
-		<pattr name = "analysis_frequency_high" value = "8000" />
+		<pattr name = "analysis_frequency_high" value = "12000" />
 		<pattr name = "analysis_frequency_low" value = "40" />
-		<pattr name = "analysis_frequency_mid" value = "200" />
+		<pattr name = "analysis_frequency_mid" value = "400" />
 		<pattr name = "analysis_group0_active" value = "1" />
 		<pattr name = "analysis_group0_level" value = "1." />
-		<pattr name = "analysis_group0_peaks" value = "200" />
-		<pattr name = "analysis_group1_active" value = "1" />
+		<pattr name = "analysis_group0_peaks" value = "50" />
+		<pattr name = "analysis_group1_active" value = "0" />
 		<pattr name = "analysis_group1_level" value = "1." />
-		<pattr name = "analysis_group1_peaks" value = "200" />
-		<pattr name = "analysis_group2_active" value = "1" />
+		<pattr name = "analysis_group1_peaks" value = "20" />
+		<pattr name = "analysis_group2_active" value = "0" />
 		<pattr name = "analysis_group2_level" value = "1." />
-		<pattr name = "analysis_group2_peaks" value = "200" />
-		<pattr name = "analysis_group3_active" value = "1" />
+		<pattr name = "analysis_group2_peaks" value = "4" />
+		<pattr name = "analysis_group3_active" value = "0" />
 		<pattr name = "analysis_group3_level" value = "1." />
-		<pattr name = "analysis_group3_peaks" value = "200" />
-		<pattr name = "analysis_volume_high" value = "0.6" />
+		<pattr name = "analysis_group3_peaks" value = "4" />
+		<pattr name = "analysis_volume_high" value = "0.8" />
 		<pattr name = "analysis_volume_low" value = "0.01" />
 		<pattr name = "analysis_volume_mid" value = "0.3" />
 		<pattr name = "analysis_x_high" value = "1" />
@@ -27,12 +27,12 @@
 		<pattr name = "analysis_z_high" value = "2" />
 		<pattr name = "analysis_z_low" value = "0" />
 		<pattr name = "audio_file_loop" value = "1" />
-		<pattr name = "audio_file_path" value = "" />
+		<pattr name = "audio_file_path" value = "&lt;empty&gt;" />
 		<pattr name = "audio_input_device" value = "0" />
 		<pattr name = "audio_output" value = "1" />
 		<pattr name = "audio_output_device" value = "0" />
 		<pattr name = "audio_sr" value = "1" />
-		<pattr name = "osc_framerate" value = "24" />
+		<pattr name = "osc_framerate" value = "60" />
 		<pattr name = "osc_host" value = "localhost" />
 		<pattr name = "osc_output" value = "1" />
 		<pattr name = "osc_port" value = "8888" />

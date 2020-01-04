@@ -77,6 +77,9 @@ namespace _halftheory {
 	    [System.NonSerialized] public float z_center;
 		[System.NonSerialized] public Vector3 worldCenter;
 
+        public Vector3 camera_position = Vector3.zero;
+        public Vector3 camera_eulerAngles = Vector3.zero;
+
 		public List<string> meshData = new List<string>(); // top int is group
 
 		public void Initialize() {
@@ -180,6 +183,14 @@ namespace _halftheory {
                         settingsCamera();
                         meshCalculatePointsStart();
                 	}
+                    // end for all
+                    else {
+                        if (current) {
+                            // update camera
+                            data.camera_position = MainSettingsVars.maincameraObject.transform.position;
+                            data.camera_eulerAngles = MainSettingsVars.maincameraObject.transform.eulerAngles;
+                        }
+                    }
                 	// live
                 	if (MainSettingsVars.data.currentGameMode == gameMode.live) {
                 		if (value) {
@@ -975,6 +986,26 @@ namespace _halftheory {
             if (!initialized || !data.initialized || !current) {
                 return;
             }
+            if (data.camera_position == Vector3.zero && data.camera_eulerAngles == Vector3.zero) {
+                resetCamera();
+                return;
+            }
+            // this object is 0
+            transform.position = Vector3.zero;
+            // root object is 0
+            transform.parent.position = Vector3.zero;
+            // main cam from data
+            MainSettingsVars.maincameraObject.transform.position = data.camera_position;
+            MainSettingsVars.maincameraObject.transform.eulerAngles = data.camera_eulerAngles;
+            // light above cam
+            if (MainSettingsVars.lightObject != null) {
+                MainSettingsVars.lightObject.transform.position = transform.TransformPoint(lightPosition);
+            }
+        }
+        public void resetCamera() {
+            if (!initialized || !data.initialized || !current) {
+                return;
+            }
             // this object is 0
             transform.position = Vector3.zero;
             // root object is 0
@@ -1117,7 +1148,21 @@ namespace _halftheory {
         private string ffmpegPath {
             get {
                 if (string.IsNullOrEmpty(_ffmpegPath)) {
-                    _ffmpegPath = Path.Combine(UnityEngine.Application.streamingAssetsPath, "ffmpeg");
+                    string pathEnd = "";
+                    var platform = UnityEngine.Application.platform;
+                    if (platform == UnityEngine.RuntimePlatform.OSXPlayer || platform == UnityEngine.RuntimePlatform.OSXEditor) {
+                        pathEnd = "ffmpeg/osx/ffmpeg";
+                    }
+                    else if (platform == UnityEngine.RuntimePlatform.LinuxPlayer || platform == UnityEngine.RuntimePlatform.LinuxEditor) {
+                        pathEnd = "ffmpeg/linux/ffmpeg";
+                    }
+                    else if (platform == UnityEngine.RuntimePlatform.WindowsPlayer || platform == UnityEngine.RuntimePlatform.WindowsEditor) {
+                        pathEnd = "ffmpeg/win/ffmpeg.exe";
+                    }
+                    else {
+                        return _ffmpegPath;
+                    }
+                    _ffmpegPath = Path.Combine(UnityEngine.Application.streamingAssetsPath, pathEnd);
                 }
                 return _ffmpegPath;
             }
