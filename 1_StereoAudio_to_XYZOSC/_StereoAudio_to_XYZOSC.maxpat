@@ -3545,7 +3545,7 @@
 					"presentation" : 1,
 					"presentation_rect" : [ 525.0, 150.0, 210.0, 20.0 ],
 					"style" : "",
-					"text" : "1. Peak Detection (0-200 peaks)"
+					"text" : "Peak Detection (max. 200 peaks)"
 				}
 
 			}
