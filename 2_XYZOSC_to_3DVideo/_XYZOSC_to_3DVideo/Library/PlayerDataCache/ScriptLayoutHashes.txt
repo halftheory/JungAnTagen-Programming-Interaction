@@ -1,6 +1,4 @@
 OSXStandalone
-PlayerPath?
-/projects_working/stefanjuster-sine-machine/_project/JungAnTagen-Programming-Interaction/2_XYZOSC_to_3DVideo/build/osx/_XYZOSC_to_3DVideo.app
 SceneListBegin?
 Assets/Scenes/XYZOSC_to_3DVideo.unity
 SceneListEnd?

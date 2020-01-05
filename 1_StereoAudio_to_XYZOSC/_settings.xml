@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 
-<pattrstorage name = "u854000866">
+<pattrstorage name = "u412000601">
 	<slot number = "1">
 		<pattr name = "analysis_frequency_high" value = "12000" />
 		<pattr name = "analysis_frequency_low" value = "40" />

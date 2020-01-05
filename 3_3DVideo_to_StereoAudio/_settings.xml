@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 
-<pattrstorage name = "u690000982">
+<pattrstorage name = "u697001206">
 	<slot number = "1">
 		<pattr name = "analysis_b" value = "0" />
 		<pattr name = "analysis_b_cycle_time" value = "0" />
@@ -26,7 +26,7 @@
 		<pattr name = "audio_sr" value = "1" />
 		<pattr name = "audio_vol" value = "0.1" />
 		<pattr name = "video_file_loop" value = "1" />
-		<pattr name = "video_file_path" value = "" />
+		<pattr name = "video_file_path" value = "&lt;empty&gt;" />
 		<pattr name = "video_preview" value = "0" />
 		<pattr name = "video_sbs" value = "0" />
 		<pattr name = "video_vol" value = "0." />
