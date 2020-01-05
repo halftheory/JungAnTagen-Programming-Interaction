@@ -4299,7 +4299,7 @@
 					"presentation" : 1,
 					"presentation_rect" : [ 285.0, 45.0, 360.0, 30.0 ],
 					"style" : "",
-					"text" : "work:/projects_working/stefanjuster-sine-machine/DYAD/beta03/DYAD_beta03.mov",
+					"text" : "",
 					"varname" : "video_file_path",
 					"wordwrap" : 0
 				}
@@ -5103,35 +5103,30 @@
  ],
 		"dependency_cache" : [ 			{
 				"name" : "analysis.maxpat",
-				"bootpath" : "/projects_working/stefanjuster-sine-machine/_project/3_3DVideo_to_StereoAudio",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "analysis_plane.maxpat",
-				"bootpath" : "/projects_working/stefanjuster-sine-machine/_project/3_3DVideo_to_StereoAudio",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "poly_cycle.maxpat",
-				"bootpath" : "/projects_working/stefanjuster-sine-machine/_project/3_3DVideo_to_StereoAudio",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "pan2.maxpat",
-				"bootpath" : "/Users/Shared/Max 7/Examples/spatialization/panning/lib",
-				"patcherrelativepath" : "../../../../Users/Shared/Max 7/Examples/spatialization/panning/lib",
+				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "smooth_line.maxpat",
-				"bootpath" : "/projects_working/stefanjuster-sine-machine/_project/3_3DVideo_to_StereoAudio",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1
@@ -5144,7 +5139,6 @@
 			}
 , 			{
 				"name" : "spill2poly.js",
-				"bootpath" : "/projects_working/stefanjuster-sine-machine/_project/3_3DVideo_to_StereoAudio",
 				"patcherrelativepath" : ".",
 				"type" : "TEXT",
 				"implicit" : 1
