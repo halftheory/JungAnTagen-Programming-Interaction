@@ -59,7 +59,7 @@ Usage:
 
 Notes:
 - If you are unable to open the app, check folders for .sh files and run these commands in Terminal.
-- If any of your meshes use 'No Clear Time' or very long 'Clear Times' you must stop the render manually.
+- If any of your meshes use 'No clear time' or very long 'Clear time's you must stop the render manually.
 - It is not recommended to delete the 'testObject' animation.
 - Applications #1 and #2 must run on the same machine for rendered videos to contain sound.
 
